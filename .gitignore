@@ -1,0 +1,20 @@
+# Isolated Neovim runtime paths
+cache/
+state/
+data/
+
+# Python Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Python compiler/linter caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ruff_cache/
+
+# Local User Configurations
+config/nvim/lua/local_profile.lua

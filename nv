@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+import os
+import sys
+
+# Define workspace directories
+workspace = "/home/stephanie/DEV/nvim-setup"
+config_dir = os.path.join(workspace, "config")
+data_dir = os.path.join(workspace, "data")
+state_dir = os.path.join(workspace, "state")
+cache_dir = os.path.join(workspace, "cache")
+
+# Ensure directories exist
+os.makedirs(os.path.join(config_dir, "nvim"), exist_ok=True)
+os.makedirs(data_dir, exist_ok=True)
+os.makedirs(state_dir, exist_ok=True)
+os.makedirs(cache_dir, exist_ok=True)
+
+# Set environment variables
+os.environ["ORIG_XDG_CONFIG_HOME"] = os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
+os.environ["ORIG_XDG_DATA_HOME"] = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
+os.environ["ORIG_XDG_STATE_HOME"] = os.environ.get("XDG_STATE_HOME", os.path.expanduser("~/.local/state"))
+os.environ["ORIG_XDG_CACHE_HOME"] = os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
+
+os.environ["XDG_CONFIG_HOME"] = config_dir
+os.environ["XDG_DATA_HOME"] = data_dir
+os.environ["XDG_STATE_HOME"] = state_dir
+os.environ["XDG_CACHE_HOME"] = cache_dir
+
+# Run nvim with the remaining arguments
+try:
+    os.execvp("nvim", ["nvim"] + sys.argv[1:])
+except FileNotFoundError:
+    print("Error: 'nvim' command not found on PATH.", file=sys.stderr)
+    sys.exit(1)
