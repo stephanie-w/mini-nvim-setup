@@ -1,0 +1,232 @@
+-- colors/deepwater.lua
+
+-- 1. Reset
+vim.cmd('highlight clear')
+if vim.fn.exists('syntax_on') then
+  vim.cmd('syntax reset')
+end
+
+vim.o.termguicolors = true
+vim.g.colors_name = 'deepwater'
+
+-- 2. The Deepwater Palette
+local c = {
+  bg          = '#062329', -- Deep Teal
+  fg          = '#d1b897', -- Warm Wheat text
+
+  -- UI
+  cursor      = '#ffffff',
+  line_nr     = '#1c454e',
+  visual      = '#215d9c',
+  search_bg   = '#d7ba7d',
+  search_fg   = '#000000',
+  match_paren = '#ffaf00',
+
+  -- Syntax
+  comment     = '#44b340',
+  string      = '#2ec09c',
+  keyword     = '#ffffff',
+  constant    = '#7ad0c6',
+  func        = '#d1b897',
+  type        = '#ffffff',
+
+  -- Diagnostics/Debugging
+  error       = '#ff3333',
+  warning     = '#fabd2f',
+  todo        = '#000000',
+}
+
+-- 3. Mapping Helper
+local function set_hl(group, opts)
+  vim.api.nvim_set_hl(0, group, opts)
+end
+
+-- 4. Assign Groups
+
+-- ======================
+-- Editor UI
+-- ======================
+set_hl('Normal',        { fg = c.fg, bg = c.bg })
+set_hl('SignColumn',    { bg = c.bg })
+set_hl('Cursor',        { fg = c.bg, bg = c.cursor })
+set_hl('CursorLine',    { bg = '#0b2e36' })
+set_hl('LineNr',        { fg = c.line_nr })
+set_hl('CursorLineNr',  { fg = c.keyword })
+set_hl('VertSplit',     { fg = c.line_nr, bg = c.bg })
+set_hl('WinSeparator',  { fg = c.line_nr, bg = c.bg }) -- Modern split borders
+
+set_hl('Visual',        { bg = c.visual })
+set_hl('Search',        { fg = c.search_fg, bg = c.search_bg })
+set_hl('IncSearch',     { fg = c.search_fg, bg = c.search_bg })
+set_hl('CurSearch',     { fg = c.bg, bg = c.cursor }) -- Highlight current search match
+set_hl('MatchParen',    { fg = c.match_paren })
+
+set_hl('Directory',     { fg = c.constant }) -- Highlight directories in mini.files
+set_hl('EndOfBuffer',   { fg = '#0b2e36' }) -- Muted ~ characters at end of buffer
+set_hl('NonText',       { fg = c.line_nr }) -- Indent guides / whitespace
+set_hl('Title',         { fg = c.constant, bold = true }) -- Help titles / UI headers
+
+-- ======================
+-- Syntax
+-- ======================
+set_hl('Comment',       { fg = c.comment })
+
+set_hl('String',        { fg = c.string })
+set_hl('Character',     { fg = c.string })
+
+set_hl('Delimiter',     { fg = c.fg })
+
+set_hl('Number',        { fg = c.constant })
+set_hl('Boolean',       { fg = c.constant })
+set_hl('Float',         { fg = c.constant })
+set_hl('Constant',      { fg = c.constant })
+
+set_hl('Identifier',    { fg = c.fg })
+set_hl('Function',      { fg = c.func })
+
+-- Keywords & Statements
+set_hl('Keyword',       { fg = c.keyword })
+set_hl('Conditional',   { fg = c.keyword })
+set_hl('Repeat',        { fg = c.keyword })
+set_hl('Exception',     { fg = c.keyword })
+set_hl('Statement',     { fg = c.keyword }) -- Makes 'def', 'class', 'return', etc. white
+set_hl('Include',       { fg = c.keyword }) -- Makes 'import', 'from' white
+
+-- Symbols/Other statements that should remain wheat
+set_hl('Label',         { fg = c.fg })
+set_hl('Operator',      { fg = c.fg })
+
+-- Types & structure
+set_hl('Type',          { fg = c.type })
+set_hl('Structure',     { fg = c.type })
+set_hl('Typedef',       { fg = c.type })
+
+set_hl('PreProc',       { fg = c.constant })
+set_hl('Special',       { fg = c.fg })
+
+set_hl('Error',         { fg = c.error })
+set_hl('Todo',          { fg = c.todo, bg = c.comment })
+
+-- LSP / Neovim diagnostic groups
+set_hl('DiagnosticError',   { fg = c.error })
+set_hl('DiagnosticWarn',    { fg = c.warning })
+set_hl('DiagnosticInfo',    { fg = c.constant })
+set_hl('DiagnosticHint',    { fg = c.comment })
+set_hl('DiagnosticVirtualTextError', { fg = c.error })
+set_hl('DiagnosticVirtualTextWarn',  { fg = c.warning })
+set_hl('DiagnosticVirtualTextInfo',  { fg = c.constant })
+set_hl('DiagnosticVirtualTextHint',  { fg = c.comment })
+
+-- ======================
+-- Completion menu
+-- ======================
+set_hl('Pmenu',         { fg = c.fg, bg = '#04181c' })
+set_hl('PmenuSel',      { fg = c.keyword, bg = c.visual })
+set_hl('PmenuSbar',     { bg = '#04181c' })
+set_hl('PmenuThumb',    { bg = '#0f3336' })
+
+-- ======================
+-- Floating windows (IMPORTANT for cmp docs & which-key)
+-- ======================
+set_hl('NormalFloat',   { fg = c.fg, bg = '#04181c' })
+set_hl('FloatBorder',   { fg = c.line_nr, bg = '#04181c' })
+set_hl('FloatTitle',    { fg = c.fg, bg = '#04181c' })
+
+-- ======================
+-- Diff & Git
+-- ======================
+-- Standard diff flags for mini.diff gutter signs and file changes
+set_hl('Added',          { fg = c.comment })
+set_hl('Changed',        { fg = c.warning })
+set_hl('Removed',        { fg = c.error })
+set_hl('GitSignsAdd',    { link = 'Added' })
+set_hl('GitSignsChange', { link = 'Changed' })
+set_hl('GitSignsDelete', { link = 'Removed' })
+
+-- Overlay highlight groups used during diff merges and git diff buffers
+set_hl('DiffAdd',        { bg = '#113f37' })     -- Dark green background
+set_hl('DiffChange',     { bg = '#1a323c' })     -- Dark teal-blue background
+set_hl('DiffDelete',     { bg = '#401b1b' })     -- Dark red background
+set_hl('DiffText',       { bg = '#254b5a' })     -- Highlighted text inside DiffChange
+
+-- ======================
+-- Treesitter 
+-- ======================
+set_hl('@variable',             { fg = c.fg })
+set_hl('@variable.builtin',     { fg = c.fg })
+set_hl('@function',             { fg = c.func })
+set_hl('@constant',             { fg = c.constant })
+set_hl('@string',               { fg = c.string })
+set_hl('@keyword',              { fg = c.keyword })
+set_hl('@keyword.function',     { fg = c.keyword })
+set_hl('@keyword.return',       { fg = c.keyword })
+set_hl('@type',                 { fg = c.type })
+set_hl('@type.builtin',         { fg = c.fg })
+set_hl('@type.qualifier',       { fg = c.type })
+set_hl('@boolean',              { fg = c.constant })
+set_hl('@operator',             { fg = c.fg })
+set_hl('@comment',              { fg = c.comment })
+set_hl('@punctuation.bracket', { fg = c.fg })
+set_hl('@punctuation.delimiter', { fg = c.fg })
+
+-- ======================
+-- which-key
+-- ======================
+set_hl('WhichKey',          { fg = c.keyword, bg = '#04181c' })
+set_hl('WhichKeyNormal',    { link = 'NormalFloat' })
+set_hl('WhichKeyBorder',    { link = 'FloatBorder' })
+set_hl('WhichKeyDesc',      { fg = c.comment })
+set_hl('WhichKeyGroup',     { fg = c.constant })
+set_hl('WhichKeySeparator', { fg = c.line_nr })
+set_hl('WhichKeyValue',     { fg = c.comment })
+set_hl('WhichKeyTitle',     { fg = c.fg })
+
+-- ======================
+-- nvim-cmp
+-- ======================
+set_hl('CmpItemAbbr',           { fg = c.fg })
+set_hl('CmpItemAbbrMatch',      { fg = c.constant })
+set_hl('CmpItemAbbrMatchFuzzy', { fg = c.constant })
+set_hl('CmpItemKind',           { fg = c.func })
+set_hl('CmpItemMenu',           { fg = c.line_nr })
+
+set_hl('CmpDoc',                { fg = c.fg, bg = '#04181c' })
+set_hl('CmpDocBorder',          { fg = c.line_nr, bg = '#04181c' })
+set_hl('CmpDocTitle',           { fg = c.fg, bg = '#04181c' })
+
+
+-- ======================
+-- Statusline palette
+-- ======================
+vim.g.deepwater_statusline = {
+  bg       = '#04181c',
+  fg       = c.fg,
+  muted    = c.line_nr,
+  accent   = c.constant,
+  insert   = c.string,
+  visual   = c.visual,
+  replace  = c.error,
+  command  = c.warning,
+}
+
+-- ======================
+-- mini.statusline
+-- ======================
+local sl = vim.g.deepwater_statusline
+
+set_hl('MiniStatuslineModeNormal',  { fg = sl.bg, bg = sl.accent, bold = true })
+set_hl('MiniStatuslineModeInsert',  { fg = sl.bg, bg = sl.insert, bold = true })
+set_hl('MiniStatuslineModeVisual',  { fg = sl.bg, bg = sl.visual, bold = true })
+set_hl('MiniStatuslineModeReplace', { fg = sl.bg, bg = sl.replace, bold = true })
+set_hl('MiniStatuslineModeCommand', { fg = sl.bg, bg = sl.command, bold = true })
+set_hl('MiniStatuslineModeOther',   { fg = sl.bg, bg = sl.accent, bold = true })
+
+-- Main bar
+set_hl('MiniStatuslineNormal',      { fg = sl.fg, bg = sl.bg })
+set_hl('MiniStatuslineInactive',    { fg = sl.muted, bg = sl.bg })
+
+-- Sections
+set_hl('MiniStatuslineDevinfo',     { fg = sl.accent, bg = sl.bg })
+set_hl('MiniStatuslineFilename',    { fg = sl.fg, bg = sl.bg })
+set_hl('MiniStatuslineFileinfo',    { fg = sl.muted, bg = sl.bg })
+set_hl('MiniStatuslineLocation',    { fg = sl.muted, bg = sl.bg })
