@@ -8,7 +8,7 @@ require("options")
 -- ========================================================================== --
 -- 2. THEME & VISUALS (Built-in mini.nvim)
 -- ========================================================================== --
-vim.cmd("colorscheme nord") -- Options: 'nord', 'solarized-dark', 'deep-teal'
+vim.cmd("colorscheme deepwater") -- Options: 'nord', 'solarized-dark', 'deep-teal', 'deepwater'
 require("mini.statusline").setup() -- Polished, integrated statusline
 
 -- ========================================================================== --
@@ -35,14 +35,30 @@ vim.keymap.set("n", "<leader>pf", "<cmd>Pick files<cr>", { desc = "Pick Files" }
 vim.keymap.set("n", "<leader>pg", "<cmd>Pick grep_live<cr>", { desc = "Pick Grep (Live)" })
 vim.keymap.set("n", "<leader>pb", "<cmd>Pick buffers<cr>", { desc = "Pick Buffers" })
 vim.keymap.set("n", "<leader>ph", "<cmd>Pick help<cr>", { desc = "Pick Help" })
-vim.keymap.set("n", "<leader>pd", function() MiniExtra.pickers.diagnostic() end, { desc = "Pick Diagnostics" })
-vim.keymap.set("n", "<leader>pka", function() MiniExtra.pickers.keymaps() end, { desc = "Pick All Keymaps" })
-vim.keymap.set("n", "<leader>pkl", function() MiniExtra.pickers.keymaps({}, { query = { "l", "s", "p" } }) end, { desc = "Pick LSP Keymaps" })
-vim.keymap.set("n", "<leader>pkg", function() MiniExtra.pickers.keymaps({}, { query = { "g", "i", "t" } }) end, { desc = "Pick Git Keymaps" })
-vim.keymap.set("n", "<leader>pkp", function() MiniExtra.pickers.keymaps({}, { query = { "p", "i", "c", "k" } }) end, { desc = "Pick Picker Keymaps" })
-vim.keymap.set("n", "<leader>pc", function() MiniExtra.pickers.git_commits() end, { desc = "Pick Git Commits" })
-vim.keymap.set("n", "<leader>ps", function() MiniExtra.pickers.lsp({ scope = "document_symbol" }) end, { desc = "Pick Document Symbols" })
-vim.keymap.set("n", "<leader>pr", function() MiniExtra.pickers.lsp({ scope = "references" }) end, { desc = "Pick References" })
+vim.keymap.set("n", "<leader>pd", function()
+	MiniExtra.pickers.diagnostic()
+end, { desc = "Pick Diagnostics" })
+vim.keymap.set("n", "<leader>pka", function()
+	MiniExtra.pickers.keymaps()
+end, { desc = "Pick All Keymaps" })
+vim.keymap.set("n", "<leader>pkl", function()
+	MiniExtra.pickers.keymaps({}, { query = { "l", "s", "p" } })
+end, { desc = "Pick LSP Keymaps" })
+vim.keymap.set("n", "<leader>pkg", function()
+	MiniExtra.pickers.keymaps({}, { query = { "g", "i", "t" } })
+end, { desc = "Pick Git Keymaps" })
+vim.keymap.set("n", "<leader>pkp", function()
+	MiniExtra.pickers.keymaps({}, { query = { "p", "i", "c", "k" } })
+end, { desc = "Pick Picker Keymaps" })
+vim.keymap.set("n", "<leader>pc", function()
+	MiniExtra.pickers.git_commits()
+end, { desc = "Pick Git Commits" })
+vim.keymap.set("n", "<leader>ps", function()
+	MiniExtra.pickers.lsp({ scope = "document_symbol" })
+end, { desc = "Pick Document Symbols" })
+vim.keymap.set("n", "<leader>pr", function()
+	MiniExtra.pickers.lsp({ scope = "references" })
+end, { desc = "Pick References" })
 
 -- Autocomplete Navigation Keymaps (mini.completion & mini.pairs)
 vim.keymap.set("i", "<Tab>", function()
@@ -129,17 +145,19 @@ vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Smart Rename" })
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP Code Actions" })
 
 -- Diagnostic Navigation Keymaps
-vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, { desc = "Next Diagnostic" })
-vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, { desc = "Previous Diagnostic" })
+vim.keymap.set("n", "]d", function()
+	vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = "Next Diagnostic" })
+vim.keymap.set("n", "[d", function()
+	vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = "Previous Diagnostic" })
 vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show Line Diagnostic Details" })
-
-
 
 -- ========================================================================== --
 -- 6. TREESITTER HIGH-PERFORMANCE NATIVE SYNTAX (Optional)
 -- ========================================================================== --
 -- To enable native Treesitter syntax highlighting, uncomment the block below.
--- NOTE: This requires having the compiled 'python.so' parser installed in your 
+-- NOTE: This requires having the compiled 'python.so' parser installed in your
 -- Neovim runtimepath (e.g. inside `data/nvim/parser/python.so`).
 --
 -- vim.api.nvim_create_autocmd("FileType", {
@@ -174,7 +192,7 @@ vim.keymap.set("n", "<leader>gs", "<cmd>tab Git status<cr>", { desc = "Git Statu
 
 -- Open Commit Diff on the Right Panel
 vim.keymap.set("n", "<leader>gc", function()
-	vim.cmd("vertical Lua require('mini.git').show_at_cursor()")
+	vim.cmd("vertical lua require('mini.git').show_at_cursor()")
 end, { desc = "Inspect commit in right panel" })
 
 -- Git Line History (Normal and Visual modes)
@@ -182,15 +200,15 @@ vim.keymap.set({ "n", "x" }, "<leader>gh", "<cmd>lua MiniGit.show_range_history(
 
 -- Force Filetypes for syntax colors on raw git log stream
 vim.api.nvim_create_autocmd("User", {
-	pattern = "MiniGitCommandDone",
+	pattern = "MiniGitCommandSplit",
 	callback = function(args)
-		local win_id = args.data.win_id
+		local win_id = args.data.win_stdout
 		local bufnr = vim.api.nvim_win_get_buf(win_id)
 		local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)
 		if #lines > 0 then
 			if lines[1]:match("^commit") or lines[1]:match("^diff %-%-git") then
 				vim.bo[bufnr].filetype = "diff"
-			elseif lines[1]:match("^%*?%s*%x%x%x%x%x%x%x") or args.data.args[1] == "log" then
+			elseif lines[1]:match("^%*?%s*%x%x%x%x%x%x%x") or args.data.git_subcommand == "log" then
 				vim.bo[bufnr].filetype = "git"
 			end
 		end
@@ -253,7 +271,9 @@ require("agentic").setup({
 })
 
 -- Assistant Keymaps
-vim.keymap.set({ "n", "x" }, "<leader>at", function() require("agentic").toggle() end, { desc = "Toggle Assistant Chat Sidebar" })
+vim.keymap.set({ "n", "x" }, "<leader>at", function()
+	require("agentic").toggle()
+end, { desc = "Toggle Assistant Chat Sidebar" })
 
 -- Enable markdown syntax highlighting for all Agentic buffers (since Treesitter is disabled)
 vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
@@ -320,5 +340,9 @@ local function send_code_to_repl(is_visual)
 end
 
 -- Keymaps to send current line (Normal) or selection (Visual) to REPL
-vim.keymap.set("n", "<leader>rr", function() send_code_to_repl(false) end, { desc = "Send line to REPL" })
-vim.keymap.set("x", "<leader>rr", function() send_code_to_repl(true) end, { desc = "Send selection to REPL" })
+vim.keymap.set("n", "<leader>rr", function()
+	send_code_to_repl(false)
+end, { desc = "Send line to REPL" })
+vim.keymap.set("x", "<leader>rr", function()
+	send_code_to_repl(true)
+end, { desc = "Send selection to REPL" })
