@@ -10,6 +10,7 @@ vim.opt.tabstop = 4 -- Number of spaces tabs count for
 vim.opt.expandtab = true -- Turn tabs into spaces
 vim.opt.splitright = true -- Force vertical splits to open on the right
 vim.opt.termguicolors = true -- Enable 24-bit True Color support
+vim.opt.swapfile = false
 
 -- Automatically point Python LSP to local .venv if it exists (uv project aware)
 if vim.fn.isdirectory(".venv") == 1 then

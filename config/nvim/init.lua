@@ -8,7 +8,9 @@ require("options")
 -- ========================================================================== --
 -- 2. THEME & VISUALS (Built-in mini.nvim)
 -- ========================================================================== --
-vim.cmd("colorscheme deepwater") -- Options: 'nord', 'solarized-dark', 'deep-teal', 'deepwater'
+
+
+vim.cmd("colorscheme deep-teal") -- Options: 'nord', 'solarized-dark', 'deep-teal', 'deepwater'
 require("mini.statusline").setup() -- Polished, integrated statusline
 
 -- ========================================================================== --
@@ -28,6 +30,50 @@ require("mini.trailspace").setup() -- Highlight and trim messy trailing whitespa
 require("mini.pick").setup() -- Lightweight fuzzy picker
 require("mini.extra").setup() -- Extra pickers (diagnostics, keymaps, etc.)
 
+local miniclue = require("mini.clue")
+miniclue.setup({
+	triggers = {
+		-- Leader triggers
+		{ mode = "n", keys = "<Leader>" },
+		{ mode = "x", keys = "<Leader>" },
+
+		-- Built-in completion
+		{ mode = "i", keys = "<C-x>" },
+
+		-- `g` key
+		{ mode = "n", keys = "g" },
+		{ mode = "x", keys = "g" },
+
+		-- Marks
+		{ mode = "n", keys = "'" },
+		{ mode = "n", keys = "`" },
+		{ mode = "x", keys = "'" },
+		{ mode = "x", keys = "`" },
+
+		-- Registers
+		{ mode = "n", keys = '"' },
+		{ mode = "x", keys = '"' },
+		{ mode = "i", keys = "<C-r>" },
+		{ mode = "c", keys = "<C-r>" },
+
+		-- Window commands
+		{ mode = "n", keys = "<C-w>" },
+
+		-- `z` key
+		{ mode = "n", keys = "z" },
+		{ mode = "x", keys = "z" },
+	},
+
+	clues = {
+		miniclue.gen_clues.builtin_completion(),
+		miniclue.gen_clues.g(),
+		miniclue.gen_clues.marks(),
+		miniclue.gen_clues.registers(),
+		miniclue.gen_clues.windows(),
+		miniclue.gen_clues.z(),
+	},
+})
+
 vim.keymap.set("n", "<leader>tw", "<cmd>Lua MiniTrailspace.trim()<cr>", { desc = "Trim trailing whitespace" })
 
 -- Picker Keymaps
@@ -41,15 +87,7 @@ end, { desc = "Pick Diagnostics" })
 vim.keymap.set("n", "<leader>pka", function()
 	MiniExtra.pickers.keymaps()
 end, { desc = "Pick All Keymaps" })
-vim.keymap.set("n", "<leader>pkl", function()
-	MiniExtra.pickers.keymaps({}, { query = { "l", "s", "p" } })
-end, { desc = "Pick LSP Keymaps" })
-vim.keymap.set("n", "<leader>pkg", function()
-	MiniExtra.pickers.keymaps({}, { query = { "g", "i", "t" } })
-end, { desc = "Pick Git Keymaps" })
-vim.keymap.set("n", "<leader>pkp", function()
-	MiniExtra.pickers.keymaps({}, { query = { "p", "i", "c", "k" } })
-end, { desc = "Pick Picker Keymaps" })
+
 vim.keymap.set("n", "<leader>pc", function()
 	MiniExtra.pickers.git_commits()
 end, { desc = "Pick Git Commits" })
@@ -158,14 +196,14 @@ vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show Line 
 -- ========================================================================== --
 -- To enable native Treesitter syntax highlighting, uncomment the block below.
 -- NOTE: This requires having the compiled 'python.so' parser installed in your
--- Neovim runtimepath (e.g. inside `data/nvim/parser/python.so`).
+-- Neovim runtimepath (e.g. inside `~/.local/share/nvim/site/parser/python.so`).
 --
--- vim.api.nvim_create_autocmd("FileType", {
--- 	pattern = "python",
--- 	callback = function()
--- 		vim.treesitter.start()
--- 	end,
--- })
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "python",
+	callback = function()
+		vim.treesitter.start()
+	end,
+})
 
 -- ========================================================================== --
 -- 7. GIT WORKFLOW & HISTORY PANEL
@@ -188,6 +226,7 @@ end, { desc = "Previous Git hunk" })
 
 -- Git Tab Layouts
 vim.keymap.set("n", "<leader>gl", "<cmd>tab Git log --oneline<cr>", { desc = "Git Log (Dedicated Tab)" })
+vim.keymap.set("n", "<leader>gf", "<cmd>tab Git log --oneline -- %<cr>", { desc = "Git Log for Current File" })
 vim.keymap.set("n", "<leader>gs", "<cmd>tab Git status<cr>", { desc = "Git Status (Dedicated Tab)" })
 
 -- Open Commit Diff on the Right Panel
@@ -297,20 +336,23 @@ vim.g.markdown_fenced_languages = { "python", "lua", "bash", "sh" }
 local function send_text_to_repl(text)
 	-- Look for an existing terminal channel
 	local term_chan = nil
+	local term_buf = nil
 	for _, chan in ipairs(vim.api.nvim_list_chans()) do
 		if chan.mode == "terminal" and chan.pty then
 			term_chan = chan.id
+			term_buf = chan.buffer
 			break
 		end
 	end
 
-	-- If no terminal is open, split and start python3
+	-- If no terminal is open, split and start ipython via uvx
 	if not term_chan then
-		vim.cmd("vsplit | terminal python3")
+		vim.cmd("vsplit | terminal uvx ipython")
 		vim.cmd("sleep 100m") -- Give PTY a split-second to start
 		for _, chan in ipairs(vim.api.nvim_list_chans()) do
 			if chan.mode == "terminal" and chan.pty then
 				term_chan = chan.id
+				term_buf = chan.buffer
 				break
 			end
 		end
