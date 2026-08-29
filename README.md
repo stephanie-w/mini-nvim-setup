@@ -95,7 +95,7 @@ To edit the main configuration directly:
 *   `<leader>pg` : Search query using live grep (requires `ripgrep`).
 *   `<leader>pb` : List active buffers.
 *   `<leader>ph` : Search help tags.
-*   `<leader>pd` : List and search workspace diagnostics.
+*   `<leader>pd` : List and search diagnostics across active session buffers.
 *   `<leader>pka` : List and search all active keymaps.
 *   `<leader>pkl` : List and search LSP keymaps.
 *   `<leader>pkg` : List and search Git keymaps.
@@ -130,8 +130,15 @@ To edit the main configuration directly:
 *   `<leader>gd` : Open full syntax-highlighted commit diff using **`delta`** in a terminal tab.
 *   `<leader>gh` : Open line range evolution history (Normal/Visual selection).
 
+### GitHub CLI (gh) & PR Integration
+*   `<leader>gpr` : List open GitHub Pull Requests in terminal tab.
+*   `<leader>gpc` : Interactive GitHub PR checkout in terminal tab.
+*   `<leader>gpv` : View active GitHub PR overview and details in terminal tab.
+*   `<leader>gpd` : View active GitHub PR diff using **`delta`** syntax highlighting in terminal tab.
+
 ### ACP Coding Assistant (`agentic.nvim`)
 *   `<leader>at` : Toggle the Assistant Chat Sidebar.
+*   `<leader>aw` : Toggle Assistant Sidebar Width (flips between 35% compact and 65% wide view).
 *   `<leader>ac` : Add visual selection or active file to Agentic chat context.
 *   `<leader>ap` : Open Quick Prompt Box to type a prompt (attaches selection/file context automatically).
 *   `\m` or `<localLeader>m` (inside Chat) : Open model switcher modal to select model.
@@ -180,7 +187,7 @@ Here is how a Python developer navigates, inspects documentation, debugs type er
 - **Live Diagnostics:** As you type, Ruff and `ty` display live diagnostic hints directly on the line.
 - **Cycle Through Issues:** Press **`]d`** to jump to the **next** diagnostic error/warning, or **`[d`** for the **previous** one.
 - **Inspect Detailed Error Info:** Press **`<leader>d`** to open a floating window showing the exact error code, message, and traceback.
-- **Workspace Error Overview:** Press **`<leader>pd`** to open a fuzzy picker listing all linting and type errors across the entire project.
+- **Workspace Error Overview:** Press **`<leader>pd`** to open a fuzzy picker listing all linting and type errors across all currently active/loaded buffers in your session.
 
 ### 3. ⚡ Quick Fixes, Formatting & Refactoring
 - **Auto-Fix & Import Support:** Press **`<leader>ca`** on a diagnostic line to trigger LSP code actions (e.g. automatically insert missing imports or apply Ruff quick-fixes).
@@ -213,6 +220,61 @@ Here is how a developer leverages the integrated ACP AI coding assistant (`agent
 
 ### 4. 🔄 Reviewing & Integrating Generated Code
 - **Refine & Implement:** Direct the assistant to generate unit tests, explain complex logic, or refactor code blocks, then seamlessly apply suggested diffs back into your workspace buffers.
+
+---
+
+## Daily Multi-Tab Workspace & Navigation Scenario
+
+Here is how a developer manages files across tabs and navigates project structure:
+
+### 1. 🔍 Finding Files & Grepping
+- **Fuzzy Find Project Files:** Press **`<leader>pf`** to quickly pick and open files by name.
+- **Live Grep Search:** Press **`<leader>pg`** to search code patterns dynamically across the workspace.
+
+### 2. 🗂️ Multi-Tab Context & Buffer Management
+- **Open in New Tab from Explorer:** Open file explorer with **`<leader>e`**, navigate to a file, and press **`gt`** to open it in a new tab.
+- **Switch Between Tabs:** Use **`H`** (previous tab) and **`L`** (next tab) to cycle through active tabs.
+- **Switch Active Buffers:** Press **`<leader>pb`** to list and jump between open buffers in the editor session.
+
+### 3. 💡 Interactive Keymap Clues
+- **Keymap Hints (`mini.clue`):** Press `<Leader>` or key prefixes (`g`, `z`, `<C-w>`) and pause briefly to view contextual popup hints and descriptions inline.
+
+---
+
+## Daily Pre-Push Code Quality Audit Scenario
+
+Here is how a developer conducts a full quality pass before committing and pushing code:
+
+### 1. 🛡️ Session Diagnostics Pass
+- **Active Session Diagnostics:** Press **`<leader>pd`** to bring up a fuzzy picker of all linting errors (Ruff) and type warnings (`ty`) across all active buffers in your editor session.
+- **Inspect Floating Error Details:** Jump to an issue line and press **`<leader>d`** to view full floating diagnostic tracebacks.
+- **In-Buffer Diagnostic Jump:** Press **`]d`** or **`[d`** to cycle through warnings and errors directly inside the active buffer.
+
+### 2. ⚡ Code Actions & Refactoring
+- **Trigger Quick-Fix Actions:** Press **`<leader>ca`** to run LSP code actions (auto-import missing modules, fix unused imports).
+- **Smart Symbol Rename:** Press **`<leader>rn`** on any symbol to rename it safely across the file.
+- **Trim Whitespace & Format:** Press **`<leader>tw`** to trim trailing whitespaces, and save (`:w`) to trigger automatic Ruff formatting.
+
+### 3. 🔍 Final Diff Verification
+- **Toggle Inline Diff Overlay:** Press **`<leader>td`** to visually highlight modified, added, or deleted lines against `HEAD`.
+- **Review Git Status:** Press **`<leader>gs`** to open Git status in a dedicated tab before staging and committing.
+
+---
+
+## Daily GitHub PR Code Review Scenario
+
+Here is how a developer uses the integrated GitHub CLI (`gh`) and `delta` tools to perform code reviews:
+
+### 1. 🔍 PR Discovery & Overview
+- **List Open PRs:** Press **`<leader>gpr`** to open a terminal tab displaying all open GitHub Pull Requests.
+- **Inspect PR Details:** Press **`<leader>gpv`** to read the active PR description, comments, and review status.
+
+### 2. ⚡ Interactive Checkout & Full PR Diff
+- **Interactive Checkout:** Press **`<leader>gpc`** to select and checkout any PR branch interactively.
+- **Syntax-Highlighted PR Diff:** Press **`<leader>gpd`** to open the entire PR diff rendered with `delta` side-by-side / inline syntax highlighting in a terminal tab.
+
+### 3. 📜 Deep Context & Line History
+- **Line Range History:** Highlight line ranges and press **`<leader>gh`** to inspect previous commit history for target files under review.
 
 ---
 

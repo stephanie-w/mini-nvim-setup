@@ -17,6 +17,7 @@ require("mini.statusline").setup() -- Polished, integrated statusline
 -- 3. DEVELOPMENT LIFE QUALITY MODULES
 -- ========================================================================== --
 require("mini.completion").setup({ -- Native, lightweight auto-completion popups
+	lsp_completion = { auto_setup = false },
 	delay = { completion = 100, info = 100 },
 	window = {
 		info = { height = 25, width = 80, border = "single" },
@@ -284,6 +285,12 @@ vim.keymap.set("n", "<leader>gd", function()
 	vim.cmd("startinsert")
 end, { desc = "Show Commit with Delta in Terminal Tab" })
 
+-- GitHub CLI (gh) PR Integration
+vim.keymap.set("n", "<leader>gpr", "<cmd>tabnew | terminal gh pr list<cr>i", { desc = "List GitHub PRs" })
+vim.keymap.set("n", "<leader>gpc", "<cmd>tabnew | terminal gh pr checkout<cr>i", { desc = "Interactive GH PR Checkout" })
+vim.keymap.set("n", "<leader>gpd", "<cmd>tabnew | terminal gh pr diff | delta --paging=always<cr>i", { desc = "Show GH PR Diff with Delta" })
+vim.keymap.set("n", "<leader>gpv", "<cmd>tabnew | terminal gh pr view<cr>i", { desc = "View GH PR Overview" })
+
 -- Auto-close terminal buffers cleanly on exit (hides 'Process exited' prompt)
 vim.api.nvim_create_autocmd("TermClose", {
 	pattern = "*",
@@ -437,17 +444,43 @@ if has_agentic then
 	vim.keymap.set({ "n", "v", "x" }, "<leader>ap", function()
 		_G.AgenticQuickPrompt()
 	end, { desc = "Quick Prompt Box (with selection/file context)" })
+
+	vim.keymap.set("n", "<leader>aw", function()
+		for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+			local buf = vim.api.nvim_win_get_buf(win)
+			if vim.bo[buf].filetype == "AgenticChat" then
+				local cur_w = vim.api.nvim_win_get_width(win)
+				local total_w = vim.o.columns
+				if cur_w < math.floor(total_w * 0.5) then
+					vim.api.nvim_win_set_width(win, math.floor(total_w * 0.65))
+				else
+					vim.api.nvim_win_set_width(win, math.floor(total_w * 0.35))
+				end
+				break
+			end
+		end
+	end, { desc = "Toggle Agentic Sidebar Width (Compact/Wide)" })
 end
 
--- Enable markdown syntax highlighting for all Agentic buffers (since Treesitter is disabled)
-vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
+-- Disable mini.completion in Agentic buffers and ensure Agentic slash command completefunc & file picker omnifunc are preserved
+vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter", "BufEnter" }, {
 	pattern = "Agentic*",
-	callback = function()
-		vim.schedule(function()
-			if vim.api.nvim_buf_is_valid(0) then
-				vim.bo.syntax = "markdown"
+	callback = function(args)
+		local bufnr = args.buf
+		if vim.api.nvim_buf_is_valid(bufnr) then
+			vim.b[bufnr].minicompletion_disable = true
+			local ft = vim.bo[bufnr].filetype
+			local bufname = vim.api.nvim_buf_get_name(bufnr)
+			if ft == "AgenticInput" or bufname:match("Input") then
+				vim.bo[bufnr].completefunc = "v:lua.require'agentic.acp.slash_commands'.complete_func"
+				vim.bo[bufnr].omnifunc = "v:lua.require'agentic.ui.file_picker'.complete_func"
 			end
-		end)
+			vim.schedule(function()
+				if vim.api.nvim_buf_is_valid(bufnr) then
+					vim.bo[bufnr].syntax = "markdown"
+				end
+			end)
+		end
 	end,
 })
 

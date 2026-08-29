@@ -95,6 +95,10 @@ For example, to edit your main configuration:
 *   `<leader>gc` : Open a vertical pane to inspect the specific Git commit under your cursor.
 *   `<leader>gd` : Open full syntax-highlighted commit diff using **`delta`** in a terminal tab.
 *   `<leader>gh` : Open line range evolution history (Normal/Visual selection).
+*   `<leader>gpr` : List open GitHub Pull Requests in terminal tab (`gh pr list`).
+*   `<leader>gpc` : Interactive GitHub PR checkout in terminal tab (`gh pr checkout`).
+*   `<leader>gpv` : View active GitHub PR overview details in terminal tab (`gh pr view`).
+*   `<leader>gpd` : View active GitHub PR diff using **`delta`** in terminal tab (`gh pr diff`).
 
 #### Native LSP Navigation & Diagnostics
 *   `gd` : Go to definition.
@@ -105,7 +109,7 @@ For example, to edit your main configuration:
 *   `<leader>ca` : Trigger LSP code actions (auto-import, quick fixes, etc.).
 *   `]d` / `[d` : Jump to the next / previous diagnostic issue.
 *   `<leader>d` : Show details of the current line diagnostic in a floating window.
-*   `<leader>pd` : Search workspace diagnostic errors across all files.
+*   `<leader>pd` : Search diagnostic errors across active session buffers.
 *   `<leader>tw` : Manually trim trailing whitespaces across the current buffer.
 
 #### Python REPL Integration
@@ -115,6 +119,7 @@ For example, to edit your main configuration:
 
 #### ACP Coding Assistant (`agentic.nvim`)
 *   `<leader>at` : Toggle the Assistant Chat Sidebar.
+*   `<leader>aw` : Toggle Assistant Sidebar Width (35% compact vs 65% wide view).
 *   `<leader>ac` : Add visual line selection or active file to Chat context.
 *   `<leader>ap` : Open Quick Prompt Box to type a prompt (attaches selection/file context automatically).
 *   `\m` or `<localLeader>m` (inside Chat) : Open model switcher modal to select model.
