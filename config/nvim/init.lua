@@ -371,12 +371,21 @@ if has_agentic then
 				command = "opencode",
 				args = { "acp" },
 				env = original_env,
+				initial_model = "deepseek/deepseek-v4-pro",
 			},
 			["kiro"] = {
 				name = "Kiro Agent",
 				command = "kiro-cli",
 				args = { "acp" },
 				env = original_env,
+				initial_model = "claude-sonnet-4.5",
+			},
+			["gemini"] = {
+				name = "Gemini Agent",
+				command = "gemini",
+				args = { "--acp" },
+				env = original_env,
+				initial_model = "gemini-2.5-pro",
 			},
 		},
 	})
