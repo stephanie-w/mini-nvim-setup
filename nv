@@ -3,7 +3,7 @@ import os
 import sys
 
 # Define workspace directories
-workspace = "/home/stephanie/DEV/nvim-setup"
+workspace = os.path.dirname(os.path.abspath(__file__))
 config_dir = os.path.join(workspace, "config")
 data_dir = os.path.join(workspace, "data")
 state_dir = os.path.join(workspace, "state")

@@ -118,12 +118,71 @@ To edit the main configuration directly:
 *   `<leader>rr` : (Visual mode) Send selected block to Python terminal REPL.
 
 
-### Git Integration
-*   `]h` / `[h` : Jump to the next / previous modified Git hunk.
-*   `<leader>gl` : Open interactive Git log in a dedicated tab.
+### Git Integration & Diff Tools
+*   `]h` / `[h` : Jump to the next / previous modified Git hunk (`mini.diff`).
+*   `<leader>td` : Toggle live inline color-coded diff overlays in active buffer (`mini.diff`).
+*   `<leader>gb` : Search, preview, and switch Git branches (`mini.extra`).
+*   `<leader>gL` : Open interactive commit graph across **all branches** (`git log --graph --all`).
+*   `<leader>gl` : Open repository Git log in a dedicated tab.
+*   `<leader>gf` : Open Git log for current active file.
 *   `<leader>gs` : Open Git status in a dedicated tab.
-*   `<leader>gc` : Inspect the Git commit details for the line under your cursor.
+*   `<CR>` *(inside Git log)* : View commit diff in-place (swaps window content).
+*   `q` / `<BS>` *(inside commit diff)* : Delete diff buffer and return back to Git log graph.
+*   `<leader>pc` : Fuzzy search commit history with live diff preview (`mini.extra`).
 *   `<leader>gh` : Open line range evolution history (Normal/Visual selection).
+
+---
+
+## Daily Developer Git Workflow Scenario
+
+Here is how a developer uses these integrated tools during a typical workday:
+
+### 1. ☕ Morning Context & Branch Switching
+- **View Full Repository Tree:** Press `<leader>gL` to open the graph log across all branches in a new tab. Press `<CR>` on any commit line to inspect its diff in-place, and `q` or `<BS>` to close the diff and return to the log.
+- **Switch Branches:** Press `<leader>gb` to fuzzy pick and switch local or remote branches.
+
+### 2. 🔍 Investigating History & Debugging
+- **Line-by-Line Evolution History:** Select lines in Visual mode (or place cursor on a line) and press `<leader>gh` to see who changed those specific lines and why.
+- **Fuzzy Search Commits:** Press `<leader>pc` to fuzzy search commit messages with live diff previews.
+- **Current File History:** Press `<leader>gf` to view commits that modified your active file.
+
+### 3. ✍️ Active Coding & Live Diff Tracking
+- **Live Inline Diff Overlay:** Press `<leader>td` to toggle colored inline diff highlights directly inside your code buffer (`+` green, `-` red).
+- **Hunk Navigation:** Press `]h` or `[h` to jump directly to next or previous modified hunks.
+
+### 4. 📦 Review & Interactive Patch Staging
+- **Status Panel:** Press `<leader>gs` to open your workspace status panel.
+- **Interactive Patch Add:** Run `:Git add -p` inside Neovim to interactively stage hunks in a split buffer.
+
+---
+
+## Daily Python Developer Workflow Scenario
+
+Here is how a Python developer navigates, inspects documentation, debugs type errors, and executes code:
+
+### 1. 🔍 Code Navigation & Exploring Method Signatures
+- **Go to Definition:** Place cursor on any class, method, or function and press **`gd`** to jump directly to its source definition.
+- **Inspect Method Documentation & Type Hints:** Press **`K`** on any function/class to pop up its full docstring, arguments, return type signature, and type hints provided natively by Ruff & `ty`.
+- **List Buffer Methods & Classes:** Press **`<leader>ps`** (`MiniExtra.pickers.lsp`) to fuzzy-search all functions, classes, and methods defined in the current file.
+- **Find References Across Project:** Press **`<leader>pr`** on any symbol to locate all usages across the repository.
+- **Jump Back/Forward:** Press **`Ctrl-O`** to jump back to where you were, or **`Ctrl-I`** to jump forward.
+
+### 2. 🐛 Investigating Linting & Typecheck Issues (Ruff & `ty`)
+- **Live Diagnostics:** As you type, Ruff and `ty` display live diagnostic hints directly on the line.
+- **Cycle Through Issues:** Press **`]d`** to jump to the **next** diagnostic error/warning, or **`[d`** for the **previous** one.
+- **Inspect Detailed Error Info:** Press **`<leader>d`** to open a floating window showing the exact error code, message, and traceback.
+- **Workspace Error Overview:** Press **`<leader>pd`** to open a fuzzy picker listing all linting and type errors across the entire project.
+
+### 3. ⚡ Quick Fixes, Formatting & Refactoring
+- **Auto-Fix & Import Support:** Press **`<leader>ca`** on a diagnostic line to trigger LSP code actions (e.g. automatically insert missing imports or apply Ruff quick-fixes).
+- **Smart Symbol Rename:** Press **`<leader>rn`** on a function or variable to rename it cleanly across the file.
+- **Format on Save:** Saving (`:w`) automatically formats Python code according to Ruff standards.
+
+### 4. 🐍 Interactive REPL Testing
+- **Send Line to REPL:** In Normal mode, press **`<leader>rr`** on any line to send it directly to an interactive IPython terminal split.
+- **Send Selected Block:** Highlight a block in Visual mode (`v`) and press **`<leader>rr`** to execute the entire block in the REPL.
+
+---
 
 ### ACP Coding Assistant (`agentic.nvim`)
 *   `<leader>at` : Toggle the Assistant Chat Sidebar.

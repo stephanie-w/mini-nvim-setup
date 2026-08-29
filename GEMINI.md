@@ -51,6 +51,21 @@ For example, to edit your main configuration:
 ./nv config/nvim/init.lua
 ```
 
+### Dedicated Standalone Git Browser Mode (`./nv-git`)
+To launch Neovim as a dedicated, distraction-free Git history & branch browser (like Tig / Lazygit) using single-key shortcuts without opening standard editing modes:
+```bash
+./nv-git
+```
+
+#### Git Browser Single-Key Shortcuts:
+*   `b` : Open branch picker to search & switch branches (`mini.extra` / `mini.pick`).
+*   `l` : Refresh & view full commit log graph across all branches.
+*   `s` : Open interactive Git status view.
+*   `f` : View commit history log for current file.
+*   `<CR>` : Inspect commit under cursor in split view (`mini.git`).
+*   `q` : Quit Git Browser.
+*   `?` : Display shortcut help overlay.
+
 ### Essential Keyboard Shortcuts
 *   **Leader Key:** `<Space>`
 
@@ -84,18 +99,27 @@ For example, to edit your main configuration:
 
 #### Git Operations
 *   `]h` / `[h` : Jump to the next / previous modified Git hunk.
+*   `<leader>td` : Toggle live inline color-coded diff overlays in active buffer (`mini.diff`).
 *   `<leader>gl` : Open an interactive, formatted git log in a dedicated Neovim tab.
+*   `<leader>gL` : Open interactive commit graph across all branches (`git log --graph --all`).
+*   `<leader>gb` : Search, preview, and switch Git branches (`mini.extra`).
+*   `<leader>gf` : Open Git log for current active file.
 *   `<leader>gs` : Open Git status in a dedicated tab.
+*   `<CR>` *(inside Git log)* : Show commit diff directly in current window (replaces buffer).
+*   `q` / `<BS>` *(inside commit diff)* : Return back to Git log view.
 *   `<leader>gc` : Open a vertical pane to inspect the specific Git commit under your cursor.
 *   `<leader>gh` : Open line range evolution history (Normal/Visual selection).
 
 #### Native LSP Navigation & Diagnostics
 *   `gd` : Go to definition.
-*   `K` : Show documentation hover popup.
+*   `K` : Show documentation hover popup (docstrings, signatures, type hints).
+*   `<leader>ps` : Search and pick LSP document symbols in active buffer.
+*   `<leader>pr` : Search and pick LSP references under cursor across workspace.
 *   `<leader>rn` : Smart LSP rename across the file.
 *   `<leader>ca` : Trigger LSP code actions (auto-import, quick fixes, etc.).
 *   `]d` / `[d` : Jump to the next / previous diagnostic issue.
 *   `<leader>d` : Show details of the current line diagnostic in a floating window.
+*   `<leader>pd` : Search workspace diagnostic errors across all files.
 *   `<leader>tw` : Manually trim trailing whitespaces across the current buffer.
 
 #### Python REPL Integration

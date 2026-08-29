@@ -208,6 +208,28 @@ vim.api.nvim_create_autocmd("FileType", {
 -- ========================================================================== --
 -- 7. GIT WORKFLOW & HISTORY PANEL
 -- ========================================================================== --
+-- Subtle Full-Line Diff Background Tints (Preserves original syntax & theme text colors)
+local set_diff_highlights = function()
+	vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#1e3a2b" })
+	vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#3a1e26" })
+	vim.api.nvim_set_hl(0, "DiffChange", { bg = "#1e2e3a" })
+	vim.api.nvim_set_hl(0, "DiffText", { bg = "#3a321e" })
+
+	vim.api.nvim_set_hl(0, "diffAdded", { bg = "#1e3a2b" })
+	vim.api.nvim_set_hl(0, "diffRemoved", { bg = "#3a1e26" })
+	vim.api.nvim_set_hl(0, "diffChanged", { bg = "#1e2e3a" })
+
+	vim.api.nvim_set_hl(0, "MiniDiffOverAdd", { bg = "#1e3a2b" })
+	vim.api.nvim_set_hl(0, "MiniDiffOverDelete", { bg = "#3a1e26" })
+	vim.api.nvim_set_hl(0, "MiniDiffOverChange", { bg = "#1e2e3a" })
+end
+
+set_diff_highlights()
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+	callback = set_diff_highlights,
+})
+
 require("mini.diff").setup({
 	view = {
 		style = "sign",
@@ -216,7 +238,7 @@ require("mini.diff").setup({
 })
 require("mini.git").setup()
 
--- Git Navigation Maps
+-- Git Navigation & Diff Maps
 vim.keymap.set("n", "]h", function()
 	require("mini.diff").goto_hunk("next")
 end, { desc = "Next Git hunk" })
@@ -224,10 +246,18 @@ vim.keymap.set("n", "[h", function()
 	require("mini.diff").goto_hunk("prev")
 end, { desc = "Previous Git hunk" })
 
+vim.keymap.set("n", "<leader>td", function()
+	require("mini.diff").toggle_overlay()
+end, { desc = "Toggle MiniDiff Overlay" })
+
 -- Git Tab Layouts
 vim.keymap.set("n", "<leader>gl", "<cmd>tab Git log --oneline<cr>", { desc = "Git Log (Dedicated Tab)" })
+vim.keymap.set("n", "<leader>gL", "<cmd>tab Git log --graph --oneline --decorate --all<cr>", { desc = "Git Log Graph (All Branches)" })
 vim.keymap.set("n", "<leader>gf", "<cmd>tab Git log --oneline -- %<cr>", { desc = "Git Log for Current File" })
 vim.keymap.set("n", "<leader>gs", "<cmd>tab Git status<cr>", { desc = "Git Status (Dedicated Tab)" })
+vim.keymap.set("n", "<leader>gb", function()
+	MiniExtra.pickers.git_branches()
+end, { desc = "Pick & Switch Git Branch" })
 
 -- Open Commit Diff on the Right Panel
 vim.keymap.set("n", "<leader>gc", function()
@@ -237,19 +267,38 @@ end, { desc = "Inspect commit in right panel" })
 -- Git Line History (Normal and Visual modes)
 vim.keymap.set({ "n", "x" }, "<leader>gh", "<cmd>lua MiniGit.show_range_history()<cr>", { desc = "Git Range History" })
 
--- Force Filetypes for syntax colors on raw git log stream
+-- Force Filetypes & set keymaps for raw git log stream
 vim.api.nvim_create_autocmd("User", {
 	pattern = "MiniGitCommandSplit",
 	callback = function(args)
 		local win_id = args.data.win_stdout
 		local bufnr = vim.api.nvim_win_get_buf(win_id)
+		local subcommand = args.data.git_subcommand
 		local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)
+
 		if #lines > 0 then
 			if lines[1]:match("^commit") or lines[1]:match("^diff %-%-git") then
 				vim.bo[bufnr].filetype = "diff"
-			elseif lines[1]:match("^%*?%s*%x%x%x%x%x%x%x") or args.data.git_subcommand == "log" then
+			elseif lines[1]:match("^%*?%s*%x%x%x%x%x%x%x") or subcommand == "log" then
 				vim.bo[bufnr].filetype = "git"
 			end
+		end
+
+		-- In Git log buffers: pressing <CR> opens commit diff in current window
+		if subcommand == "log" then
+			vim.keymap.set("n", "<CR>", function()
+				local line = vim.api.nvim_get_current_line()
+				local commit = line:match("^[*|%s\\/]*([%a%d]+)")
+				if commit and #commit >= 7 then
+					vim.cmd("Git show " .. commit)
+				end
+			end, { buffer = bufnr, desc = "Show commit in current window" })
+		end
+
+		-- In Git show / commit diff buffers: pressing 'q' or <BS> deletes diff buffer and returns to log
+		if subcommand == "show" or vim.bo[bufnr].filetype == "diff" then
+			vim.keymap.set("n", "q", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Commit Diff" })
+			vim.keymap.set("n", "<BS>", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Commit Diff" })
 		end
 	end,
 })
@@ -278,41 +327,43 @@ local original_env = {
 	XDG_CACHE_HOME = os.getenv("ORIG_XDG_CACHE_HOME") or (os.getenv("HOME") .. "/.cache"),
 }
 
--- Initialize the ACP client with your available providers
-require("agentic").setup({
-	provider = default_provider,
-	acp_providers = {
-		["agy"] = {
-			name = "Gemini (AGY)",
-			command = "agy",
-			args = { "acp" },
-			env = original_env,
+local has_agentic, agentic = pcall(require, "agentic")
+if has_agentic then
+	agentic.setup({
+		provider = default_provider,
+		acp_providers = {
+			["agy"] = {
+				name = "Gemini (AGY)",
+				command = "agy",
+				args = { "acp" },
+				env = original_env,
+			},
+			["opencode"] = {
+				name = "DeepSeek (OpenCode)",
+				command = "opencode",
+				args = { "acp" },
+				env = original_env,
+			},
+			["kiro"] = {
+				name = "Kiro Agent",
+				command = "kiro-cli",
+				args = { "acp" },
+				env = original_env,
+			},
+			["copilot"] = {
+				name = "GitHub Copilot",
+				command = "copilot-agent",
+				args = { "--acp" },
+				env = original_env,
+			},
 		},
-		["opencode"] = {
-			name = "DeepSeek (OpenCode)",
-			command = "opencode",
-			args = { "acp" },
-			env = original_env,
-		},
-		["kiro"] = {
-			name = "Kiro Agent",
-			command = "kiro-cli",
-			args = { "acp" },
-			env = original_env,
-		},
-		["copilot"] = {
-			name = "GitHub Copilot",
-			command = "copilot-agent",
-			args = { "--acp" },
-			env = original_env,
-		},
-	},
-})
+	})
 
--- Assistant Keymaps
-vim.keymap.set({ "n", "x" }, "<leader>at", function()
-	require("agentic").toggle()
-end, { desc = "Toggle Assistant Chat Sidebar" })
+	-- Assistant Keymaps
+	vim.keymap.set({ "n", "x" }, "<leader>at", function()
+		agentic.toggle()
+	end, { desc = "Toggle Assistant Chat Sidebar" })
+end
 
 -- Enable markdown syntax highlighting for all Agentic buffers (since Treesitter is disabled)
 vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter" }, {
