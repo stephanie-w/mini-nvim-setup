@@ -264,6 +264,31 @@ vim.keymap.set("n", "<leader>gc", function()
 	vim.cmd("vertical lua require('mini.git').show_at_cursor()")
 end, { desc = "Inspect commit in right panel" })
 
+-- Open Commit Diff with Delta in Terminal Tab
+vim.keymap.set("n", "<leader>gd", function()
+	local line = vim.api.nvim_get_current_line()
+	local commit = line:match("^[*|%s\\/]*([%a%d]+)")
+	if not commit or #commit < 7 then
+		commit = "HEAD"
+	end
+	vim.cmd("tabnew | terminal git show " .. vim.fn.fnameescape(commit) .. " | delta --paging=always")
+	vim.cmd("startinsert")
+end, { desc = "Show Commit with Delta in Terminal Tab" })
+
+-- Auto-close terminal buffers cleanly on exit (hides 'Process exited' prompt)
+vim.api.nvim_create_autocmd("TermClose", {
+	pattern = "*",
+	callback = function(args)
+		if vim.v.event.status == 0 then
+			vim.schedule(function()
+				if vim.api.nvim_buf_is_valid(args.buf) then
+					vim.api.nvim_buf_delete(args.buf, { force = true })
+				end
+			end)
+		end
+	end,
+})
+
 -- Git Line History (Normal and Visual modes)
 vim.keymap.set({ "n", "x" }, "<leader>gh", "<cmd>lua MiniGit.show_range_history()<cr>", { desc = "Git Range History" })
 

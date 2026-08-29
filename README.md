@@ -126,9 +126,8 @@ To edit the main configuration directly:
 *   `<leader>gl` : Open repository Git log in a dedicated tab.
 *   `<leader>gf` : Open Git log for current active file.
 *   `<leader>gs` : Open Git status in a dedicated tab.
-*   `<CR>` *(inside Git log)* : View commit diff in-place (swaps window content).
-*   `q` / `<BS>` *(inside commit diff)* : Delete diff buffer and return back to Git log graph.
-*   `<leader>pc` : Fuzzy search commit history with live diff preview (`mini.extra`).
+*   `<leader>gc` : Open vertical pane to inspect commit under cursor.
+*   `<leader>gd` : Open full syntax-highlighted commit diff using **`delta`** in a terminal tab.
 *   `<leader>gh` : Open line range evolution history (Normal/Visual selection).
 
 ---

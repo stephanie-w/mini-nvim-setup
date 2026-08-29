@@ -108,6 +108,7 @@ To launch Neovim as a dedicated, distraction-free Git history & branch browser (
 *   `<CR>` *(inside Git log)* : Show commit diff directly in current window (replaces buffer).
 *   `q` / `<BS>` *(inside commit diff)* : Return back to Git log view.
 *   `<leader>gc` : Open a vertical pane to inspect the specific Git commit under your cursor.
+*   `<leader>gd` : Open full syntax-highlighted commit diff using **`delta`** in a terminal tab.
 *   `<leader>gh` : Open line range evolution history (Normal/Visual selection).
 
 #### Native LSP Navigation & Diagnostics
