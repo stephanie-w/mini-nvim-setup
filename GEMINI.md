@@ -51,21 +51,6 @@ For example, to edit your main configuration:
 ./nv config/nvim/init.lua
 ```
 
-### Dedicated Standalone Git Browser Mode (`./nv-git`)
-To launch Neovim as a dedicated, distraction-free Git history & branch browser (like Tig / Lazygit) using single-key shortcuts without opening standard editing modes:
-```bash
-./nv-git
-```
-
-#### Git Browser Single-Key Shortcuts:
-*   `b` : Open branch picker to search & switch branches (`mini.extra` / `mini.pick`).
-*   `l` : Refresh & view full commit log graph across all branches.
-*   `s` : Open interactive Git status view.
-*   `f` : View commit history log for current file.
-*   `<CR>` : Inspect commit under cursor in split view (`mini.git`).
-*   `q` : Quit Git Browser.
-*   `?` : Display shortcut help overlay.
-
 ### Essential Keyboard Shortcuts
 *   **Leader Key:** `<Space>`
 
