@@ -130,8 +130,11 @@ To launch Neovim as a dedicated, distraction-free Git history & branch browser (
 
 #### ACP Coding Assistant (`agentic.nvim`)
 *   `<leader>at` : Toggle the Assistant Chat Sidebar.
-*   `<localLeader>s` (inside Chat) : Switch active ACP assistant provider (e.g. Gemini, DeepSeek, Kiro).
-*   `<localLeader>m` (inside Chat) : Switch model for active provider.
+*   `<leader>ac` : Add visual line selection or active file to Chat context.
+*   `<leader>ap` : Open Quick Prompt Box to type a prompt (attaches selection/file context automatically).
+*   `\m` or `<localLeader>m` (inside Chat) : Open model switcher modal to select model.
+*   `\s` or `<localLeader>s` (inside Chat) : Open provider switcher modal (DeepSeek, Kiro, etc.).
+*   `\t` or `<localLeader>t` (inside Chat) : Switch reasoning / thought effort level.
 *   `@` (inside Chat) : Add specific file from workspace to context.
 *   `/` (inside Chat) : Run agent-specific slash commands.
 

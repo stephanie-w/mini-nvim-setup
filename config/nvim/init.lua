@@ -36,6 +36,7 @@ miniclue.setup({
 		-- Leader triggers
 		{ mode = "n", keys = "<Leader>" },
 		{ mode = "x", keys = "<Leader>" },
+		{ mode = "v", keys = "<Leader>" },
 
 		-- Built-in completion
 		{ mode = "i", keys = "<C-x>" },
@@ -43,6 +44,7 @@ miniclue.setup({
 		-- `g` key
 		{ mode = "n", keys = "g" },
 		{ mode = "x", keys = "g" },
+		{ mode = "v", keys = "g" },
 
 		-- Marks
 		{ mode = "n", keys = "'" },
@@ -71,6 +73,13 @@ miniclue.setup({
 		miniclue.gen_clues.registers(),
 		miniclue.gen_clues.windows(),
 		miniclue.gen_clues.z(),
+		{ mode = "n", keys = "<Leader>a", desc = "+Assistant (ACP)" },
+		{ mode = "x", keys = "<Leader>a", desc = "+Assistant (ACP)" },
+		{ mode = "v", keys = "<Leader>a", desc = "+Assistant (ACP)" },
+		{ mode = "n", keys = "<Leader>p", desc = "+Pickers" },
+		{ mode = "n", keys = "<Leader>g", desc = "+Git" },
+		{ mode = "x", keys = "<Leader>g", desc = "+Git" },
+		{ mode = "v", keys = "<Leader>g", desc = "+Git" },
 	},
 })
 
@@ -337,11 +346,11 @@ local has_profile, local_profile = pcall(require, "local_profile")
 local active_profile = has_profile and local_profile or {}
 
 -- Determine the default provider based on active environment profile
-local default_provider = "agy"
+local default_provider = "opencode"
 if active_profile.profile == "work" then
 	default_provider = active_profile.default_work_provider or "kiro"
 elseif active_profile.profile == "home" then
-	default_provider = active_profile.default_home_provider or "agy"
+	default_provider = active_profile.default_home_provider or "opencode"
 end
 
 -- Restore host XDG env variables for spawned agent CLI processes
@@ -357,12 +366,6 @@ if has_agentic then
 	agentic.setup({
 		provider = default_provider,
 		acp_providers = {
-			["agy"] = {
-				name = "Gemini (AGY)",
-				command = "agy",
-				args = { "acp" },
-				env = original_env,
-			},
 			["opencode"] = {
 				name = "DeepSeek (OpenCode)",
 				command = "opencode",
@@ -375,19 +378,56 @@ if has_agentic then
 				args = { "acp" },
 				env = original_env,
 			},
-			["copilot"] = {
-				name = "GitHub Copilot",
-				command = "copilot-agent",
-				args = { "--acp" },
-				env = original_env,
-			},
 		},
 	})
 
-	-- Assistant Keymaps
-	vim.keymap.set({ "n", "x" }, "<leader>at", function()
+	-- Assistant Keymaps & Helper Functions
+	_G.AgenticAddContext = function()
+		if agentic.add_selection_or_file_to_context then
+			pcall(agentic.add_selection_or_file_to_context)
+		elseif agentic.open then
+			pcall(agentic.open)
+		else
+			pcall(agentic.toggle)
+		end
+	end
+
+	_G.AgenticQuickPrompt = function()
+		-- Capture context/selection FIRST while visual mode is active
+		_G.AgenticAddContext()
+
+		vim.schedule(function()
+			vim.ui.input({ prompt = "🤖 Agentic Prompt: " }, function(input)
+				if input and input:find("%S") then
+					vim.schedule(function()
+						local cur_buf = vim.api.nvim_get_current_buf()
+						if vim.api.nvim_buf_is_valid(cur_buf) then
+							pcall(function()
+								vim.bo[cur_buf].modifiable = true
+								local lines = vim.split(input, "\n", { plain = true })
+								vim.api.nvim_buf_set_lines(cur_buf, 0, -1, false, lines)
+								vim.api.nvim_win_set_cursor(0, { #lines, #lines[#lines] })
+								vim.cmd("startinsert!")
+							end)
+						end
+					end)
+				end
+			end)
+		end)
+	end
+
+	-- Keybindings
+	vim.keymap.set({ "n", "v", "x" }, "<leader>at", function()
 		agentic.toggle()
 	end, { desc = "Toggle Assistant Chat Sidebar" })
+
+	vim.keymap.set({ "n", "v", "x" }, "<leader>ac", function()
+		_G.AgenticAddContext()
+	end, { desc = "Add Selection or File to Context" })
+
+	vim.keymap.set({ "n", "v", "x" }, "<leader>ap", function()
+		_G.AgenticQuickPrompt()
+	end, { desc = "Quick Prompt Box (with selection/file context)" })
 end
 
 -- Enable markdown syntax highlighting for all Agentic buffers (since Treesitter is disabled)

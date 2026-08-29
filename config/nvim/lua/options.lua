@@ -2,7 +2,8 @@
 
 local M = {}
 
-vim.g.mapleader = " " -- Use the Spacebar as your Leader key
+vim.g.mapleader = " " -- Use the Spacebar as your global Leader key
+vim.g.maplocalleader = "\\" -- Use Backslash (\) as your LocalLeader key
 vim.opt.number = true -- Show line numbers
 vim.opt.relativenumber = true -- Relative line numbers for easy jumping
 vim.opt.shiftwidth = 4 -- Size of an indent (Python standard)

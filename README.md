@@ -130,6 +130,16 @@ To edit the main configuration directly:
 *   `<leader>gd` : Open full syntax-highlighted commit diff using **`delta`** in a terminal tab.
 *   `<leader>gh` : Open line range evolution history (Normal/Visual selection).
 
+### ACP Coding Assistant (`agentic.nvim`)
+*   `<leader>at` : Toggle the Assistant Chat Sidebar.
+*   `<leader>ac` : Add visual selection or active file to Agentic chat context.
+*   `<leader>ap` : Open Quick Prompt Box to type a prompt (attaches selection/file context automatically).
+*   `\m` or `<localLeader>m` (inside Chat) : Open model switcher modal to select model.
+*   `\s` or `<localLeader>s` (inside Chat) : Open provider switcher modal (DeepSeek, Kiro, etc.).
+*   `\t` or `<localLeader>t` (inside Chat) : Switch reasoning / thought effort level.
+*   `@` (inside Chat) : Add specific file from workspace to context.
+*   `/` (inside Chat) : Run agent-specific slash commands.
+
 ---
 
 ## Daily Developer Git Workflow Scenario
@@ -183,12 +193,26 @@ Here is how a Python developer navigates, inspects documentation, debugs type er
 
 ---
 
-### ACP Coding Assistant (`agentic.nvim`)
-*   `<leader>at` : Toggle the Assistant Chat Sidebar.
-*   `<localLeader>s` (inside Chat) : Switch active ACP assistant provider (e.g. Gemini, DeepSeek, Kiro).
-*   `<localLeader>m` (inside Chat) : Switch model for active provider.
-*   `@` (inside Chat) : Add specific file from workspace to context.
-*   `/` (inside Chat) : Run agent-specific slash commands.
+## Daily Agentic Coding Workflow Scenario
+
+Here is how a developer leverages the integrated ACP AI coding assistant (`agentic.nvim`) throughout their daily coding tasks:
+
+### 1. 🤖 Context-Aware Prompting & Selection
+- **Quick Prompt Box (`<leader>ap`):** Highlight lines in Visual mode (or stay on current file in Normal mode) and press **`<leader>ap`** to open an interactive floating prompt box, type your prompt, and press `<CR>`. It automatically attaches your context, opens the chat, and places your query!
+- **Add Selected Lines to Chat (`<leader>ac`):** Highlight line(s) in Visual mode (`v` or `V`) and press **`<leader>ac`** to add the selection directly to the Agentic chat context.
+- **Toggle Chat Sidebar:** Press **`<leader>at`** to open or close the AI assistant sidebar alongside your active buffer.
+- **Attach Relevant Workspace Files:** Inside the prompt window, type **`@`** to fuzzy-search and attach exact files from your repository so the model receives full context.
+- **Yank & Paste directly:** Since standard Neovim buffers are used, you can yank (`yy` or visual `y`) lines from any code file and paste (`p`) directly into the Chat prompt window.
+
+### 2. ⚡ Dynamic Model & Provider Switching
+- **Switch AI Provider:** Press **`<localLeader>s`** inside the chat panel to switch between available providers (e.g., Gemini, DeepSeek, Kiro).
+- **Switch Model:** Press **`<localLeader>m`** to change models on the fly (e.g., lightweight models for fast edits vs. reasoning models for deep refactoring).
+
+### 3. 🛠️ Specialized Slash Commands
+- **Execute Slash Commands:** Type **`/`** inside the chat prompt to view and run slash commands (such as `/plan`, `/goal`, `/learn`, `/browser`) to guide agentic tasks.
+
+### 4. 🔄 Reviewing & Integrating Generated Code
+- **Refine & Implement:** Direct the assistant to generate unit tests, explain complex logic, or refactor code blocks, then seamlessly apply suggested diffs back into your workspace buffers.
 
 ---
 
