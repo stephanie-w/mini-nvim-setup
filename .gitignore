@@ -2,6 +2,7 @@
 cache/
 state/
 data/
+config/fish/
 
 # Python Virtual Environments
 .venv/

@@ -242,9 +242,9 @@ If you want to try Treesitter highlighting without installing any plugins:
 3. **Install the parser into your isolated environment**:
    Create the parser directory inside the workspace and copy the compiled file:
    ```bash
-   mkdir -p /home/stephanie/DEV/nvim-setup/data/nvim/parser
-   cp python.so /home/stephanie/DEV/nvim-setup/data/nvim/parser/
+   mkdir -p data/nvim/site/parser
+   cp python.so data/nvim/site/parser/
    ```
 
-4. **Uncomment the Treesitter block** inside your [init.lua](file:///home/stephanie/DEV/nvim-setup/config/nvim/init.lua) under **Section 6** and reload Neovim!
+4. **Uncomment the Treesitter block** inside your [init.lua](file:///home/stephanie/DEV/mini-nvim-setup/config/nvim/init.lua) under **Section 6** and reload Neovim!
 
