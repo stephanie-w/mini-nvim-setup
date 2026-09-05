@@ -75,100 +75,75 @@ To edit the main configuration directly:
 
 ---
 
-## Key Keyboard Shortcuts
+## ⌨️ Keybindings & Shortcuts
 
-*   **Leader Key**: `<Space>`
+All keybindings are organized into a dedicated, categorized cheatsheet:
 
-### Navigation & Layout
-*   `<leader>e` : Toggle File Explorer panel (`mini.files`).
-*   `gt` : (Within explorer) Open selected file in a **new tab** (and close explorer).
-*   `H` : Switch to the previous tab.
-*   `L` : Switch to the next tab.
+👉 **[View Full Keymaps & Shortcuts Cheatsheet (KEYMAPS.md)](KEYMAPS.md)**
 
-### Autocomplete (Insert Mode)
-*   `<Tab>` : Select next item when the autocomplete popup is visible.
-*   `<S-Tab>` : Select previous item when the autocomplete popup is visible.
-*   `<CR>` (Enter) : Accept the highlighted autocomplete suggestion (retains brackets auto-pairing if popup is closed).
+### Quick Reference Highlights
 
-### Fuzzy Pickers (`mini.pick` & `mini.extra`)
-*   `<leader>pf` : Search files in project.
-*   `<leader>pg` : Search query using live grep (requires `ripgrep`).
-*   `<leader>pb` : List active buffers.
-*   `<leader>ph` : Search help tags.
-*   `<leader>pd` : List and search diagnostics across active session buffers.
-*   `<leader>pka` : List and search all active keymaps.
-*   `<leader>pkl` : List and search LSP keymaps.
-*   `<leader>pkg` : List and search Git keymaps.
-*   `<leader>pkp` : List and search picker keymaps.
-*   `<leader>pc` : Search and pick Git commits.
-*   `<leader>ps` : Search and pick LSP document symbols in active buffer.
-*   `<leader>pr` : Search and pick LSP references under cursor.
-
-### LSP (Language Server Protocol) & Diagnostics
-*   `gd` : Go to definition.
-*   `K` : Show hover documentation.
-*   `<leader>rn` : Smart LSP rename.
-*   `<leader>ca` : Trigger LSP code actions (quick-fixes, auto-imports).
-*   `]d` / `[d` : Jump to the next / previous diagnostic issue.
-*   `<leader>d` : Show details of the current line diagnostic in a floating window.
-*   `<leader>tw` : Manually trim trailing whitespaces.
-
-### Python REPL Integration
-*   `<leader>rr` : (Normal mode) Send current line to Python terminal REPL.
-*   `<leader>rr` : (Visual mode) Send selected block to Python terminal REPL.
-
-
-### Git Integration & Diff Tools
-*   `]h` / `[h` : Jump to the next / previous modified Git hunk (`mini.diff`).
-*   `<leader>td` : Toggle live inline color-coded diff overlays in active buffer (`mini.diff`).
-*   `<leader>gb` : Search, preview, and switch Git branches (`mini.extra`).
-*   `<leader>gL` : Open interactive commit graph across **all branches** (`git log --graph --all`).
-*   `<leader>gl` : Open repository Git log in a dedicated tab.
-*   `<leader>gf` : Open Git log for current active file.
-*   `<leader>gs` : Open Git status in a dedicated tab.
-*   `<leader>gc` : Open vertical pane to inspect commit under cursor.
-*   `<leader>gd` : Open full syntax-highlighted commit diff using **`delta`** in a terminal tab.
-*   `<leader>gh` : Open line range evolution history (Normal/Visual selection).
-
-### GitHub CLI (gh) & PR Integration
-*   `<leader>gpr` : List open GitHub Pull Requests in terminal tab.
-*   `<leader>gpc` : Interactive GitHub PR checkout in terminal tab.
-*   `<leader>gpv` : View active GitHub PR overview and details in terminal tab.
-*   `<leader>gpd` : View active GitHub PR diff using **`delta`** syntax highlighting in terminal tab.
-
-### ACP Coding Assistant (`agentic.nvim`)
-*   `<leader>at` : Toggle the Assistant Chat Sidebar.
-*   `<leader>aw` : Toggle Assistant Sidebar Width (flips between 35% compact and 65% wide view).
-*   `<leader>ac` : Add visual selection or active file to Agentic chat context.
-*   `<leader>ap` : Open Quick Prompt Box to type a prompt (attaches selection/file context automatically).
-*   `\m` or `<localLeader>m` (inside Chat) : Open model switcher modal to select model.
-*   `\s` or `<localLeader>s` (inside Chat) : Open provider switcher modal (DeepSeek, Kiro, etc.).
-*   `\t` or `<localLeader>t` (inside Chat) : Switch reasoning / thought effort level.
-*   `@` (inside Chat) : Add specific file from workspace to context.
-*   `/` (inside Chat) : Run agent-specific slash commands.
+| Category | Primary Keymaps | Description |
+| :--- | :--- | :--- |
+| **Navigation & Tabs** | `H` / `L`, `<leader>e`, `gt` | Tab switching & explorer |
+| **LSP & Intelligence** | `K`, `<C-k>`, `gd`, `<leader>ca`, `<leader>d`, `]d`/`[d` | Hover docs, signatures, actions, diagnostics |
+| **Autocomplete** | `<Tab>`, `<S-Tab>`, `<CR>` | Popup navigation & bracket matching |
+| **Fuzzy Pickers** | `<leader>pf` (files), `<leader>pg` (grep), `<leader>pb` (buffers) | Fast fuzzy search (`mini.pick`) |
+| **Git Operations** | `ghgh` (stage hunk), `<leader>td` (diff overlay), `<leader>gs` | Gutter diffs & repository HUD |
+| **GitHub PRs** | `<leader>gpr` (list), `<leader>gpd` (diff with `delta`) | GitHub CLI review tools |
+| **Coding Assistant** | `<leader>at` (sidebar), `<leader>ap` (prompt), `<leader>as` (stop) | Multi-provider ACP AI Agent |
+| **Interactive REPL** | `<leader>rr` (send line / selection) | IPython terminal integration |
+| **Live Keymap Finder** | `<leader>pka` | Interactive searchable keymap picker in Neovim |
 
 ---
 
-## Daily Developer Git Workflow Scenario
+## Daily Developer Git & Staging Workflow Scenario
 
-Here is how a developer uses these integrated tools during a typical workday:
+Here is how a developer uses these integrated tools to review, navigate into changed files, stage granular hunks/files, and commit during a typical workday:
 
 ### 1. ☕ Morning Context & Branch Switching
 - **View Full Repository Tree:** Press `<leader>gL` to open the graph log across all branches in a new tab. Press `<CR>` on any commit line to inspect its diff in-place, and `q` or `<BS>` to close the diff and return to the log.
 - **Switch Branches:** Press `<leader>gb` to fuzzy pick and switch local or remote branches.
 
-### 2. 🔍 Investigating History & Debugging
-- **Line-by-Line Evolution History:** Select lines in Visual mode (or place cursor on a line) and press `<leader>gh` to see who changed those specific lines and why.
-- **Fuzzy Search Commits:** Press `<leader>pc` to fuzzy search commit messages with live diff previews.
-- **Current File History:** Press `<leader>gf` to view commits that modified your active file.
+### 2. 🚀 Quick Shell Review & Navigate into Changed Files (`nvc`)
+To quickly open all modified, staged, and newly created files across dedicated Neovim tabs directly from your terminal, add this helper function to your `~/.bashrc` or `~/.zshrc`:
+
+```bash
+# Open all changed, staged, and untracked files in isolated Neovim tabs (-p)
+nvc() {
+  local files
+  files=$(git status --porcelain=v1 2>/dev/null | awk '$1 !~ /D/ {print $NF}' | sort -u)
+  if [ -n "$files" ]; then
+    ./nv -p $files
+  else
+    echo "✨ Clean working directory — no changed or created files."
+  fi
+}
+
+# Fast alias to launch Neovim straight into the Git status tab
+alias nvs='./nv -c "tab Git status"'
+```
+
+- **Run `nvc` in your terminal:** Neovim launches with every touched file open in its own tab.
+- **Cycle through files:** Use **`H`** (previous tab) and **`L`** (next tab) to navigate between files effortlessly.
 
 ### 3. ✍️ Active Coding & Live Diff Tracking
-- **Live Inline Diff Overlay:** Press `<leader>td` to toggle colored inline diff highlights directly inside your code buffer (`+` green, `-` red).
+- **Live Inline Diff Overlay:** Press `<leader>td` to toggle colored inline diff highlights directly inside your code buffer (`+` green, `-` red, with character-level word diffs).
 - **Hunk Navigation:** Press `]h` or `[h` to jump directly to next or previous modified hunks.
 
-### 4. 📦 Review & Interactive Patch Staging
-- **Status Panel:** Press `<leader>gs` to open your workspace status panel.
-- **Interactive Patch Add:** Run `:Git add -p` inside Neovim to interactively stage hunks in a split buffer.
+### 4. ✂️ Granular Hunk, Line & File Staging
+- **Stage Hunk Under Cursor:** Press **`ghgh`** to stage only the hunk under your cursor into the Git index. Notice the gutter sign updates immediately.
+- **Stage Visual Selection / Lines:** Select lines in Visual mode (`v` or `V`) and press **`gh`** to stage only those specific lines.
+- **Stage Single Line:** Press **`gh_`** on the current line.
+- **Stage Entire Active File:** Run **`:Git add %`** in command line.
+- **Discard Unwanted Edits (e.g. debug print lines):** Press **`gHgh`** on the hunk or select lines in Visual mode and press **`gH`** to revert them back to the Git index/HEAD.
+- **Interactive Patch Mode:** Run **`:Git add -p`** to step through hunks in an interactive CLI split.
+
+### 5. 📦 Status Verification & Committing
+- **Status Dashboard Tab:** Press **`<leader>gs`** to open `:tab Git status` and review all staged vs unstaged files.
+- **Inspect Staged Diff:** Run `:vert Git diff --staged` or `:Git diff --cached` to verify the final staged patch.
+- **Commit with Interactive Editor:** Run **`:Git commit`** to open a Neovim split buffer for your commit message. Type your message, save and close with `:wq`.
+- **Verify Log:** Press **`<leader>gL`** to admire your clean, granular commit graph.
 
 ---
 

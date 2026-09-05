@@ -79,21 +79,31 @@ For example, to edit your main configuration:
 *   `<leader>pkg` : List and search Git keymaps.
 *   `<leader>pkp` : List and search picker keymaps.
 *   `<leader>pc` : Search and pick Git commits.
+*   `<leader>pS` : Search and pick Git stashes (with live diff preview).
 *   `<leader>ps` : Search and pick LSP document symbols in active buffer.
 *   `<leader>pr` : Search and pick LSP references under cursor.
 
 #### Git Operations
 *   `]h` / `[h` : Jump to the next / previous modified Git hunk.
 *   `<leader>td` : Toggle live inline color-coded diff overlays in active buffer (`mini.diff`).
+*   `ghgh` : Stage the Git hunk under cursor to the index (`mini.diff`).
+*   `gh` : (Visual mode) Stage visually selected lines or range to the index (`mini.diff`).
+*   `gh_` : Stage current line to Git index (`mini.diff`).
+*   `gHgh` : Reset / discard Git hunk under cursor (`mini.diff`).
+*   `gH` : (Visual mode) Reset / discard visually selected lines (`mini.diff`).
+*   `gH_` : Reset / discard current line (`mini.diff`).
+*   `:Git add %` : Stage current active file (`mini.git`).
+*   `:Git commit` : Open interactive commit message editor split (`mini.git`).
 *   `<leader>gl` : Open an interactive, formatted git log in a dedicated Neovim tab.
 *   `<leader>gL` : Open interactive commit graph across all branches (`git log --graph --all`).
 *   `<leader>gb` : Search, preview, and switch Git branches (`mini.extra`).
 *   `<leader>gf` : Open Git log for current active file.
 *   `<leader>gs` : Open Git status in a dedicated tab.
-*   `<CR>` *(inside Git log)* : Show commit diff directly in current window (replaces buffer).
-*   `q` / `<BS>` *(inside commit diff)* : Return back to Git log view.
+*   `<leader>gS` : Open Git stash list in a dedicated tab.
+*   `<CR>` *(inside Git log / stash list)* : Show commit or stash diff directly in current window (replaces buffer).
+*   `q` / `<BS>` *(inside commit / stash diff)* : Return back to Git log or stash list view.
 *   `<leader>gc` : Open a vertical pane to inspect the specific Git commit under your cursor.
-*   `<leader>gd` : Open full syntax-highlighted commit diff using **`delta`** in a terminal tab.
+*   `<leader>gd` : Open full syntax-highlighted commit or stash diff using **`delta`** in a terminal tab.
 *   `<leader>gh` : Open line range evolution history (Normal/Visual selection).
 *   `<leader>gpr` : List open GitHub Pull Requests in terminal tab (`gh pr list`).
 *   `<leader>gpc` : Interactive GitHub PR checkout in terminal tab (`gh pr checkout`).
@@ -103,6 +113,7 @@ For example, to edit your main configuration:
 #### Native LSP Navigation & Diagnostics
 *   `gd` : Go to definition.
 *   `K` : Show documentation hover popup (docstrings, signatures, type hints).
+*   `<C-k>` : Show active function signature & arguments popup (Insert/Normal mode).
 *   `<leader>ps` : Search and pick LSP document symbols in active buffer.
 *   `<leader>pr` : Search and pick LSP references under cursor across workspace.
 *   `<leader>rn` : Smart LSP rename across the file.
@@ -122,11 +133,16 @@ For example, to edit your main configuration:
 *   `<leader>aw` : Toggle Assistant Sidebar Width (35% compact vs 65% wide view).
 *   `<leader>ac` : Add visual line selection or active file to Chat context.
 *   `<leader>ap` : Open Quick Prompt Box to type a prompt (attaches selection/file context automatically).
-*   `\m` or `<localLeader>m` (inside Chat) : Open model switcher modal to select model.
-*   `\s` or `<localLeader>s` (inside Chat) : Open provider switcher modal (DeepSeek, Kiro, etc.).
-*   `\t` or `<localLeader>t` (inside Chat) : Switch reasoning / thought effort level.
-*   `@` (inside Chat) : Add specific file from workspace to context.
-*   `/` (inside Chat) : Run agent-specific slash commands.
+*   `<leader>as` : **Interrupt & Stop** the agent's current generation / cancel turn.
+*   `<C-c>` *(inside Chat)* : Stop current generation immediately.
+*   `<S-Tab>` *(inside Chat)* : Switch agent operating mode (e.g., code, ask, architect, plan).
+*   `\m` or `<localLeader>m` *(inside Chat)* : Open model switcher modal to select model.
+*   `\s` or `<localLeader>s` *(inside Chat)* : Open provider switcher modal (DeepSeek, Kiro, etc.).
+*   `\t` or `<localLeader>t` *(inside Chat)* : Switch reasoning / thought effort level.
+*   `@` *(inside Chat)* : Add specific file from workspace to context.
+*   `/` *(inside Chat)* : Run agent-specific slash commands.
+*   `1` / `2` / `3` / `4` *(on pending permission)* : 1=Allow once, 2=Allow always, 3=Reject once, 4=Reject always.
+*   `]c` / `[c` *(in Diff Preview)* : Navigate through proposed diff hunks before accepting.
 
 ---
 

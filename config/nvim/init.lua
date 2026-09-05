@@ -17,12 +17,22 @@ require("mini.statusline").setup() -- Polished, integrated statusline
 -- 3. DEVELOPMENT LIFE QUALITY MODULES
 -- ========================================================================== --
 require("mini.completion").setup({ -- Native, lightweight auto-completion popups
-	lsp_completion = { auto_setup = false },
+	lsp_completion = {
+		source_func = "completefunc",
+		auto_setup = false, -- Handled explicitly on LspAttach to protect non-LSP/Agentic buffers
+	},
 	delay = { completion = 100, info = 100 },
 	window = {
 		info = { height = 25, width = 80, border = "single" },
 		signature = { height = 25, width = 80, border = "single" },
 	},
+})
+
+-- Attach MiniCompletion LSP completion only when an LSP client connects
+vim.api.nvim_create_autocmd("LspAttach", {
+	callback = function(args)
+		vim.bo[args.buf].completefunc = "v:lua.MiniCompletion.completefunc_lsp"
+	end,
 })
 require("mini.ai").setup() -- Text objects (e.g., 'vif' to select in Python function)
 require("mini.comment").setup() -- Comment out blocks instantly with 'gc'
@@ -38,6 +48,10 @@ miniclue.setup({
 		{ mode = "n", keys = "<Leader>" },
 		{ mode = "x", keys = "<Leader>" },
 		{ mode = "v", keys = "<Leader>" },
+
+		-- Square bracket navigation ([d, ]d, [h, ]h, etc.)
+		{ mode = "n", keys = "[" },
+		{ mode = "n", keys = "]" },
 
 		-- Built-in completion
 		{ mode = "i", keys = "<C-x>" },
@@ -74,13 +88,28 @@ miniclue.setup({
 		miniclue.gen_clues.registers(),
 		miniclue.gen_clues.windows(),
 		miniclue.gen_clues.z(),
+		miniclue.gen_clues.square_brackets(),
+
+		-- Leader group descriptions
 		{ mode = "n", keys = "<Leader>a", desc = "+Assistant (ACP)" },
 		{ mode = "x", keys = "<Leader>a", desc = "+Assistant (ACP)" },
 		{ mode = "v", keys = "<Leader>a", desc = "+Assistant (ACP)" },
 		{ mode = "n", keys = "<Leader>p", desc = "+Pickers" },
+		{ mode = "n", keys = "<Leader>pk", desc = "+Keymap Pickers" },
 		{ mode = "n", keys = "<Leader>g", desc = "+Git" },
 		{ mode = "x", keys = "<Leader>g", desc = "+Git" },
 		{ mode = "v", keys = "<Leader>g", desc = "+Git" },
+		{ mode = "n", keys = "<Leader>gp", desc = "+GitHub PRs" },
+		{ mode = "n", keys = "<Leader>r", desc = "+Refactor & REPL" },
+		{ mode = "x", keys = "<Leader>r", desc = "+REPL (Selection)" },
+		{ mode = "v", keys = "<Leader>r", desc = "+REPL (Selection)" },
+		{ mode = "n", keys = "<Leader>t", desc = "+Toggle & Trim" },
+		{ mode = "n", keys = "<Leader>c", desc = "+Code Actions" },
+	},
+
+	window = {
+		delay = 300,
+		config = { width = "auto" },
 	},
 })
 
@@ -95,12 +124,49 @@ vim.keymap.set("n", "<leader>pd", function()
 	MiniExtra.pickers.diagnostic()
 end, { desc = "Pick Diagnostics" })
 vim.keymap.set("n", "<leader>pka", function()
-	MiniExtra.pickers.keymaps()
-end, { desc = "Pick All Keymaps" })
+	MiniExtra.pickers.keymaps({ mode = "n", scope = "global" })
+end, { desc = "Pick Keymaps (Normal Mode)" })
 
 vim.keymap.set("n", "<leader>pc", function()
 	MiniExtra.pickers.git_commits()
 end, { desc = "Pick Git Commits" })
+vim.keymap.set("n", "<leader>pS", function()
+	local MiniPick = require("mini.pick")
+	local stashes = vim.fn.systemlist({ "git", "stash", "list" })
+	if vim.v.shell_error ~= 0 or #stashes == 0 then
+		vim.notify("No git stashes found.", vim.log.levels.INFO)
+		return
+	end
+	local preview = function(buf_id, item)
+		if type(item) ~= "string" then
+			return
+		end
+		local stash_ref = item:match("^(stash@{%d+})")
+		if not stash_ref then
+			return
+		end
+		vim.bo[buf_id].filetype = "diff"
+		local out = vim.fn.systemlist({ "git", "stash", "show", "-p", stash_ref })
+		vim.api.nvim_buf_set_lines(buf_id, 0, -1, false, out)
+	end
+	local choose = function(item)
+		local stash_ref = item:match("^(stash@{%d+})")
+		if stash_ref then
+			vim.schedule(function()
+				vim.cmd("tabnew | terminal git stash show -p " .. vim.fn.fnameescape(stash_ref) .. " | delta --paging=always")
+				vim.cmd("startinsert")
+			end)
+		end
+	end
+	MiniPick.start({
+		source = {
+			items = stashes,
+			name = "Git Stashes",
+			preview = preview,
+			choose = choose,
+		},
+	})
+end, { desc = "Pick Git Stashes (with live diff preview)" })
 vim.keymap.set("n", "<leader>ps", function()
 	MiniExtra.pickers.lsp({ scope = "document_symbol" })
 end, { desc = "Pick Document Symbols" })
@@ -189,6 +255,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 -- Core Code Navigation Keymaps
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Go to Definition" })
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Show Code Documentation" })
+vim.keymap.set({ "i", "n" }, "<C-k>", vim.lsp.buf.signature_help, { desc = "Show Signature / Function Arguments" })
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Smart Rename" })
 vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "LSP Code Actions" })
 
@@ -211,7 +278,7 @@ vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "Show Line 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "python",
 	callback = function()
-		vim.treesitter.start()
+		pcall(vim.treesitter.start)
 	end,
 })
 
@@ -265,6 +332,7 @@ vim.keymap.set("n", "<leader>gl", "<cmd>tab Git log --oneline<cr>", { desc = "Gi
 vim.keymap.set("n", "<leader>gL", "<cmd>tab Git log --graph --oneline --decorate --all<cr>", { desc = "Git Log Graph (All Branches)" })
 vim.keymap.set("n", "<leader>gf", "<cmd>tab Git log --oneline -- %<cr>", { desc = "Git Log for Current File" })
 vim.keymap.set("n", "<leader>gs", "<cmd>tab Git status<cr>", { desc = "Git Status (Dedicated Tab)" })
+vim.keymap.set("n", "<leader>gS", "<cmd>tab Git stash list<cr>", { desc = "Git Stash List (Dedicated Tab)" })
 vim.keymap.set("n", "<leader>gb", function()
 	MiniExtra.pickers.git_branches()
 end, { desc = "Pick & Switch Git Branch" })
@@ -277,13 +345,19 @@ end, { desc = "Inspect commit in right panel" })
 -- Open Commit Diff with Delta in Terminal Tab
 vim.keymap.set("n", "<leader>gd", function()
 	local line = vim.api.nvim_get_current_line()
+	local stash = line:match("(stash@{%d+})")
+	if stash then
+		vim.cmd("tabnew | terminal git stash show -p " .. vim.fn.fnameescape(stash) .. " | delta --paging=always")
+		vim.cmd("startinsert")
+		return
+	end
 	local commit = line:match("^[*|%s\\/]*([%a%d]+)")
 	if not commit or #commit < 7 then
 		commit = "HEAD"
 	end
 	vim.cmd("tabnew | terminal git show " .. vim.fn.fnameescape(commit) .. " | delta --paging=always")
 	vim.cmd("startinsert")
-end, { desc = "Show Commit with Delta in Terminal Tab" })
+end, { desc = "Show Commit or Stash with Delta in Terminal Tab" })
 
 -- GitHub CLI (gh) PR Integration
 vim.keymap.set("n", "<leader>gpr", "<cmd>tabnew | terminal gh pr list<cr>i", { desc = "List GitHub PRs" })
@@ -308,7 +382,7 @@ vim.api.nvim_create_autocmd("TermClose", {
 -- Git Line History (Normal and Visual modes)
 vim.keymap.set({ "n", "x" }, "<leader>gh", "<cmd>lua MiniGit.show_range_history()<cr>", { desc = "Git Range History" })
 
--- Force Filetypes & set keymaps for raw git log stream
+-- Force Filetypes & set keymaps for raw git log & stash streams
 vim.api.nvim_create_autocmd("User", {
 	pattern = "MiniGitCommandSplit",
 	callback = function(args)
@@ -320,7 +394,7 @@ vim.api.nvim_create_autocmd("User", {
 		if #lines > 0 then
 			if lines[1]:match("^commit") or lines[1]:match("^diff %-%-git") then
 				vim.bo[bufnr].filetype = "diff"
-			elseif lines[1]:match("^%*?%s*%x%x%x%x%x%x%x") or subcommand == "log" then
+			elseif lines[1]:match("^%*?%s*%x%x%x%x%x%x%x") or lines[1]:match("^stash@{%d+}") or subcommand == "log" or subcommand == "stash" then
 				vim.bo[bufnr].filetype = "git"
 			end
 		end
@@ -336,10 +410,21 @@ vim.api.nvim_create_autocmd("User", {
 			end, { buffer = bufnr, desc = "Show commit in current window" })
 		end
 
-		-- In Git show / commit diff buffers: pressing 'q' or <BS> deletes diff buffer and returns to log
-		if subcommand == "show" or vim.bo[bufnr].filetype == "diff" then
-			vim.keymap.set("n", "q", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Commit Diff" })
-			vim.keymap.set("n", "<BS>", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Commit Diff" })
+		-- In Git stash list buffers: pressing <CR> opens stash diff in current window
+		if subcommand == "stash" and #lines > 0 and lines[1]:match("^stash@{%d+}") then
+			vim.keymap.set("n", "<CR>", function()
+				local line = vim.api.nvim_get_current_line()
+				local stash_ref = line:match("(stash@{%d+})")
+				if stash_ref then
+					vim.cmd("Git stash show -p " .. stash_ref)
+				end
+			end, { buffer = bufnr, desc = "Show stash diff in current window" })
+		end
+
+		-- In Git show / stash diff buffers: pressing 'q' or <BS> deletes diff buffer and returns to log/stash list
+		if subcommand == "show" or (subcommand == "stash" and #lines > 0 and lines[1]:match("^diff %-%-git")) or vim.bo[bufnr].filetype == "diff" then
+			vim.keymap.set("n", "q", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Diff" })
+			vim.keymap.set("n", "<BS>", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Diff" })
 		end
 	end,
 })
@@ -379,6 +464,7 @@ if has_agentic then
 				args = { "acp" },
 				env = original_env,
 				initial_model = "deepseek/deepseek-v4-pro",
+				default_mode = "plan",
 			},
 			["kiro"] = {
 				name = "Kiro Agent",
@@ -386,6 +472,7 @@ if has_agentic then
 				args = { "acp" },
 				env = original_env,
 				initial_model = "claude-sonnet-4.5",
+				default_mode = "plan",
 			},
 			["gemini"] = {
 				name = "Gemini Agent",
@@ -393,6 +480,7 @@ if has_agentic then
 				args = { "--acp" },
 				env = original_env,
 				initial_model = "gemini-2.5-pro",
+				default_mode = "plan",
 			},
 		},
 	})
@@ -445,6 +533,10 @@ if has_agentic then
 		_G.AgenticQuickPrompt()
 	end, { desc = "Quick Prompt Box (with selection/file context)" })
 
+	vim.keymap.set({ "n", "v", "x" }, "<leader>as", function()
+		agentic.stop_generation()
+	end, { desc = "Stop Agent Generation / Cancel Turn" })
+
 	vim.keymap.set("n", "<leader>aw", function()
 		for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
 			local buf = vim.api.nvim_win_get_buf(win)
@@ -469,6 +561,11 @@ vim.api.nvim_create_autocmd({ "FileType", "BufWinEnter", "BufEnter" }, {
 		local bufnr = args.buf
 		if vim.api.nvim_buf_is_valid(bufnr) then
 			vim.b[bufnr].minicompletion_disable = true
+			if has_agentic then
+				vim.keymap.set("n", "<C-c>", function()
+					agentic.stop_generation()
+				end, { buffer = bufnr, desc = "Stop Agent Generation" })
+			end
 			local ft = vim.bo[bufnr].filetype
 			local bufname = vim.api.nvim_buf_get_name(bufnr)
 			if ft == "AgenticInput" or bufname:match("Input") then
