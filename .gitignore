@@ -19,3 +19,4 @@ __pycache__/
 
 # Local User Configurations
 config/nvim/lua/local_profile.lua
+.agents/

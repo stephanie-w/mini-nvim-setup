@@ -14,9 +14,10 @@
 | [4. Fuzzy Pickers (`mini.pick`)](#4-fuzzy-pickers-minipick) | `<leader>p...` | Files, live grep, buffers, symbols |
 | [5. Git Operations & Gutter Diffs](#5-git-operations--gutter-diffs) | `<leader>g...`, `gh`, `gH`, `]h`/`[h` | Hunk staging, commits, log graphs |
 | [6. GitHub PR Integration](#6-github-cli-gh--pr-integration) | `<leader>gp...` | PR listings, diffs, interactive checkout |
-| [7. ACP Coding Assistant (`agentic.nvim`)](#7-acp-coding-assistant-agenticnvim) | `<leader>a...`, `\m`, `\s`, `\t` | Prompts, sidebar, mode switches |
-| [8. Python Interactive REPL](#8-python-interactive-repl) | `<leader>rr` | Send lines or selections to IPython |
-| [9. Live Keymap Discovery in Editor](#9-live-keymap-discovery-in-editor) | `<leader>pka`, `<leader>pk*` | Search all active keymaps on the fly |
+| [7. Pi AI Coding Assistant](#7-pi-ai-coding-assistant) | `<leader>ap`, `<leader>at`, `<leader>as` | Fast prompt/edit, chat sidebar, task cancellation |
+| [8. Agentic Fallback (`agentic.nvim`)](#8-agentic-fallback-agenticnvim) | `<leader>aa`, `:Agentic` | ACP sidebar fallback (DeepSeek, Kiro, Gemini) |
+| [9. Python Interactive REPL](#9-python-interactive-repl) | `<leader>rr` | Send lines or selections to IPython |
+| [10. Live Keymap Discovery in Editor](#10-live-keymap-discovery-in-editor) | `<leader>pka`, `<leader>pk*` | Search all active keymaps on the fly |
 
 ---
 
@@ -117,28 +118,30 @@
 
 ---
 
-## 7. ACP Coding Assistant (`agentic.nvim`)
+## 7. Pi AI Coding Assistant
 
 | Keymap | Mode | Action |
 | :--- | :--- | :--- |
-| **`<leader>at`** | Normal / Visual | Toggle Assistant Chat Sidebar |
-| **`<leader>aw`** | Normal | Toggle Sidebar Width (35% compact vs 65% wide) |
-| **`<leader>ac`** | Normal / Visual | Add visual line selection or active file to Chat context |
-| **`<leader>ap`** | Normal / Visual | Open Quick Prompt Box (auto-attaches context) |
-| **`<leader>as`** | Normal / Visual | **Interrupt & stop** agent generation / cancel turn |
-| **`<C-c>`** | Normal *(inside Chat)* | Stop current generation immediately |
-| **`<S-Tab>`** | Normal / Insert *(in Chat)* | Switch agent mode (`plan`, `ask`, `code`, `architect`) |
-| **`\m`** | Normal *(inside Chat)* | Open Model Switcher modal |
-| **`\s`** | Normal *(inside Chat)* | Open Provider Switcher modal (DeepSeek, Kiro, etc.) |
-| **`\t`** | Normal *(inside Chat)* | Switch reasoning / thought effort level |
-| **`@`** | Insert *(inside Chat)* | Autocomplete and attach workspace file to context |
-| **`/`** | Insert *(inside Chat)* | Autocomplete and execute slash commands |
-| **`1` / `2` / `3` / `4`** | Normal *(on permission)* | 1=Allow once, 2=Allow always, 3=Reject once, 4=Reject always |
-| **`]c` / `[c`** | Normal *(in Diff Preview)* | Jump between diff hunks before accepting/rejecting |
+| **`<leader>ap`** | Normal | **Prompt Pi** on active file (auto-detects questions vs edits) |
+| **`<leader>ap`** | Visual | **Prompt Pi** targeting selected line range |
+| **`<leader>at`** | Normal / Visual | **Toggle Pi Chat Panel** (opens/hides persistent sidebar split) |
+| **`<leader>as`** | Normal | **Stop / Cancel** active background Pi generation |
+| **`q`** | Normal *(inside chat)* | Hide Pi chat panel (preserves session history) |
+| **`q` / `<Esc>`** | Normal *(in popup)* | Close read-only floating answer popup |
 
 ---
 
-## 8. Python Interactive REPL
+## 8. Agentic Fallback (`agentic.nvim`)
+
+| Keymap / Command | Mode | Action |
+| :--- | :--- | :--- |
+| **`<leader>aa`** | Normal / Visual | Toggle `agentic.nvim` ACP sidebar (fallback) |
+| **`:Agentic`** | Command | Toggle `agentic.nvim` sidebar |
+| **`:AgenticToggle`** | Command | Toggle `agentic.nvim` sidebar |
+
+---
+
+## 9. Python Interactive REPL
 
 | Keymap | Mode | Action |
 | :--- | :--- | :--- |
@@ -147,7 +150,7 @@
 
 ---
 
-## 9. Live Keymap Discovery in Editor
+## 10. Live Keymap Discovery in Editor
 
 If you ever forget a keybinding while inside Neovim:
 
