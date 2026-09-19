@@ -15,7 +15,7 @@ require("lsp")
 require("git")
 
 -- 5. Interactive Python REPL (uv / ipython)
-require("repl")
+require("repl").setup()
 
 -- 6. Pi AI Coding Assistant (Prompt, Edit, Ask, Chat)
 require("ai")
