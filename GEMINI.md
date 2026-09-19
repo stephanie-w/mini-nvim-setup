@@ -165,3 +165,7 @@ For example, to edit your main configuration:
     python3 -m venv .venv
     ```
 *   The isolated Neovim configuration detects `.venv` automatically and adjusts your Python environment and linter search paths seamlessly.
+
+### Agent Working Notes (Neovim Config)
+
+*   **Never assert Neovim API facts from memory.** Function existence and signatures differ across versions. Neovim 0.12 is recent and behaves differently from earlier releases (e.g. `chanopen()` does not exist in 0.12). Verify with `:help` output or a user probe before writing. An unverified API name is a crash waiting to happen.
