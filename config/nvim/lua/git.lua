@@ -69,10 +69,16 @@ vim.keymap.set("n", "<leader>gb", function()
   MiniExtra.pickers.git_branches()
 end, { desc = "Pick & Switch Git Branch" })
 
--- Open Commit Diff on the Right Panel
+-- Open Commit Diff with --stat -p on the Right Panel
 vim.keymap.set("n", "<leader>gc", function()
-  vim.cmd("vertical lua require('mini.git').show_at_cursor()")
-end, { desc = "Inspect commit in right panel" })
+  local line = vim.api.nvim_get_current_line()
+  local commit = line:match("^[*|%s\\/]*([%a%d]+)")
+  if commit and #commit >= 7 then
+    vim.cmd("vertical Git show --stat -p " .. commit)
+  else
+    vim.cmd("vertical lua require('mini.git').show_at_cursor()")
+  end
+end, { desc = "Inspect commit with stat summary and diff in right panel" })
 
 -- Open Commit, Stash, or Working Tree Diff with Delta in Terminal Tab
 vim.keymap.set("n", "<leader>gd", function()
@@ -142,30 +148,55 @@ vim.api.nvim_create_autocmd("User", {
       vim.bo[bufnr].readonly = true
     end
 
-    -- In Git log buffers: pressing <CR> opens commit diff in current window
+    -- In Git log buffers: pressing <CR> opens commit diff with --stat -p in current window
     if subcommand == "log" then
       vim.keymap.set("n", "<CR>", function()
         local line = vim.api.nvim_get_current_line()
         local commit = line:match("^[*|%s\\/]*([%a%d]+)")
         if commit and #commit >= 7 then
-          vim.cmd("Git show " .. commit)
+          vim.cmd("Git show --stat -p " .. commit)
         end
-      end, { buffer = bufnr, desc = "Show commit in current window" })
+      end, { buffer = bufnr, desc = "Show commit with stat summary and diff" })
     end
 
-    -- In Git stash list buffers: pressing <CR> opens stash diff in current window
+    -- In Git stash list buffers: pressing <CR> opens stash diff with --stat -p in current window
     if subcommand == "stash" and #lines > 0 and lines[1]:match("^stash@{%d+}") then
       vim.keymap.set("n", "<CR>", function()
         local line = vim.api.nvim_get_current_line()
         local stash_ref = line:match("(stash@{%d+})")
         if stash_ref then
-          vim.cmd("Git stash show -p " .. stash_ref)
+          vim.cmd("Git stash show --stat -p " .. stash_ref)
         end
-      end, { buffer = bufnr, desc = "Show stash diff in current window" })
+      end, { buffer = bufnr, desc = "Show stash with stat summary and diff" })
     end
 
     -- In Git show / stash diff buffers: navigation between hunks and files
     if subcommand == "show" or (subcommand == "stash" and #lines > 0 and lines[1]:match("^diff %-%-git")) or vim.bo[bufnr].filetype == "diff" then
+      -- Highlight the prepended file stat summary table
+      local ns_stat = vim.api.nvim_create_namespace("git_stat_highlights")
+      vim.api.nvim_buf_clear_namespace(bufnr, ns_stat, 0, -1)
+      for lnum, line in ipairs(lines) do
+        local idx = lnum - 1
+        local file, count = line:match("^%s*([^|]+)%s*|%s*(%d+)")
+        if file and count then
+          local pipe_pos = line:find("|")
+          if pipe_pos then
+            vim.api.nvim_buf_set_extmark(bufnr, ns_stat, idx, 0, { end_col = pipe_pos - 1, hl_group = "GitStatusBranch" })
+            vim.api.nvim_buf_set_extmark(bufnr, ns_stat, idx, pipe_pos - 1, { end_col = pipe_pos, hl_group = "Comment" })
+          end
+          local plus_start, plus_end = line:find("%++", pipe_pos)
+          if plus_start then
+            vim.api.nvim_buf_set_extmark(bufnr, ns_stat, idx, plus_start - 1, { end_col = plus_end, hl_group = "GitStatusStagedType" })
+          end
+          local minus_start, minus_end = line:find("%-+", pipe_pos)
+          if minus_start then
+            vim.api.nvim_buf_set_extmark(bufnr, ns_stat, idx, minus_start - 1, { end_col = minus_end, hl_group = "GitStatusUntrackedFile" })
+          end
+        elseif line:match("%d+ files? changed") then
+          vim.api.nvim_buf_set_extmark(bufnr, ns_stat, idx, 0, { end_col = #line, hl_group = "Title" })
+        end
+      end
+
       -- Jump between hunks (@@ ... @@)
       local jump_hunk = function(direction)
         local flags = direction == "next" and "W" or "bW"
