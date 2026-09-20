@@ -15,6 +15,7 @@ All configurations, data, cache, and state files are strictly scoped to this wor
 *   **`config/nvim/`** (maps to `XDG_CONFIG_HOME`):
     *   `init.lua`: Clean high-level entrypoint requiring modular domain configs.
     *   `lua/options.lua`: Editor options, 2-space Lua & 4-space Python indentation rules, and automatic `.venv` detection.
+    *   `lua/theme.lua`: Centralized theme selection (`deep-teal`, `nord`, `solarized-dark`, `deepwater`) and UI highlights.
     *   `lua/mini_plugins.lua`: Complete `mini.nvim` suite (completion, clues, fuzzy pickers, file explorer, text objects).
     *   `lua/lsp.lua`: Native Ruff & ty LSP configuration and format-on-save.
     *   `lua/git.lua`: Git workflows, `mini.diff`, `mini.git`, Delta terminal viewer, and GitHub CLI integrations.

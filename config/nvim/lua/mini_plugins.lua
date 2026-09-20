@@ -2,8 +2,7 @@
 --                     MINI.NVIM PLUGINS & WORKFLOW MODULE                    --
 -- ========================================================================== --
 
--- 1. THEME & VISUALS
-vim.cmd("colorscheme deep-teal") -- Options: 'nord', 'solarized-dark', 'deep-teal', 'deepwater'
+-- 1. THEME & STATUSLINE
 require("mini.statusline").setup()
 
 -- 2. COMPLETION & EDITING AIDS

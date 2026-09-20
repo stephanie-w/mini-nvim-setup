@@ -5,7 +5,10 @@
 -- 1. Global Options & Environment Setup
 require("options")
 
--- 2. mini.nvim Suite & Visuals (Completion, Clues, Pickers, Files, Text Objects)
+-- 2. Theme & UI Highlights (deep-teal, deepwater, nord, solarized-dark)
+require("theme").setup("deep-teal")
+
+-- 3. mini.nvim Suite & Visuals (Completion, Clues, Pickers, Files, Text Objects)
 require("mini_plugins")
 
 -- 3. Native LSP & Diagnostics (Ruff, ty, Format on Save)

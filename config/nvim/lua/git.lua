@@ -2,42 +2,7 @@
 --                     GIT WORKFLOW & HISTORY PANEL MODULE                    --
 -- ========================================================================== --
 
--- 1. SUBTLE FULL-LINE DIFF BACKGROUND TINTS
-local set_diff_highlights = function()
-  vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#1e3a2b" })
-  vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#3a1e26" })
-  vim.api.nvim_set_hl(0, "DiffChange", { bg = "#1e2e3a" })
-  vim.api.nvim_set_hl(0, "DiffText", { bg = "#3a321e" })
-
-  vim.api.nvim_set_hl(0, "diffAdded", { bg = "#1e3a2b" })
-  vim.api.nvim_set_hl(0, "diffRemoved", { bg = "#3a1e26" })
-  vim.api.nvim_set_hl(0, "diffChanged", { bg = "#1e2e3a" })
-
-  vim.api.nvim_set_hl(0, "MiniDiffOverAdd", { bg = "#1e3a2b" })
-  vim.api.nvim_set_hl(0, "MiniDiffOverDelete", { bg = "#3a1e26" })
-  vim.api.nvim_set_hl(0, "MiniDiffOverChange", { bg = "#1e2e3a" })
-
-  -- Git Status Buffer Colors
-  vim.api.nvim_set_hl(0, "GitStatusBranch", { fg = "#61afef", bold = true })
-  vim.api.nvim_set_hl(0, "GitStatusHeaderStaged", { fg = "#98c379", bold = true })
-  vim.api.nvim_set_hl(0, "GitStatusHeaderUnstaged", { fg = "#e5c07b", bold = true })
-  vim.api.nvim_set_hl(0, "GitStatusHeaderUntracked", { fg = "#e06c75", bold = true })
-  vim.api.nvim_set_hl(0, "GitStatusHeaderConflicted", { fg = "#fb4934", bold = true })
-  vim.api.nvim_set_hl(0, "GitStatusStagedType", { fg = "#98c379", bold = true })
-  vim.api.nvim_set_hl(0, "GitStatusStagedFile", { fg = "#73daca" })
-  vim.api.nvim_set_hl(0, "GitStatusUnstagedType", { fg = "#e5c07b", bold = true })
-  vim.api.nvim_set_hl(0, "GitStatusUnstagedFile", { fg = "#e5c07b" })
-  vim.api.nvim_set_hl(0, "GitStatusUntrackedFile", { fg = "#e06c75" })
-  vim.api.nvim_set_hl(0, "GitStatusConflictedFile", { fg = "#fb4934", bold = true })
-end
-
-set_diff_highlights()
-
-vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = set_diff_highlights,
-})
-
--- 2. MINI.DIFF & MINI.GIT SETUP
+-- 1. MINI.DIFF & MINI.GIT SETUP
 require("mini.diff").setup({
   view = {
     style = "sign",

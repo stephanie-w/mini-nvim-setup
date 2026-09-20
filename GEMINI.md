@@ -12,6 +12,7 @@ All user data, configurations, and cache files are strictly scoped to this works
 *   `./config/` : Houses configuration files (maps to `XDG_CONFIG_HOME`).
     *   `nvim/init.lua` : The primary entry point for Neovim config (clean modular loader).
     *   `nvim/lua/options.lua` : Global Neovim options.
+    *   `nvim/lua/theme.lua` : Centralized theme selection & custom UI highlights.
     *   `nvim/lua/mini_plugins.lua` : Full mini.nvim configuration (completion, clues, pickers, files).
     *   `nvim/lua/lsp.lua` : Native Ruff & ty LSP configuration and formatting.
     *   `nvim/lua/git.lua` : Git tools, mini.diff, Delta viewer, and GitHub CLI workflows.
