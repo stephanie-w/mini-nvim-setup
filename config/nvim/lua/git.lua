@@ -16,6 +16,19 @@ local set_diff_highlights = function()
   vim.api.nvim_set_hl(0, "MiniDiffOverAdd", { bg = "#1e3a2b" })
   vim.api.nvim_set_hl(0, "MiniDiffOverDelete", { bg = "#3a1e26" })
   vim.api.nvim_set_hl(0, "MiniDiffOverChange", { bg = "#1e2e3a" })
+
+  -- Git Status Buffer Colors
+  vim.api.nvim_set_hl(0, "GitStatusBranch", { fg = "#61afef", bold = true })
+  vim.api.nvim_set_hl(0, "GitStatusHeaderStaged", { fg = "#98c379", bold = true })
+  vim.api.nvim_set_hl(0, "GitStatusHeaderUnstaged", { fg = "#e5c07b", bold = true })
+  vim.api.nvim_set_hl(0, "GitStatusHeaderUntracked", { fg = "#e06c75", bold = true })
+  vim.api.nvim_set_hl(0, "GitStatusHeaderConflicted", { fg = "#fb4934", bold = true })
+  vim.api.nvim_set_hl(0, "GitStatusStagedType", { fg = "#98c379", bold = true })
+  vim.api.nvim_set_hl(0, "GitStatusStagedFile", { fg = "#73daca" })
+  vim.api.nvim_set_hl(0, "GitStatusUnstagedType", { fg = "#e5c07b", bold = true })
+  vim.api.nvim_set_hl(0, "GitStatusUnstagedFile", { fg = "#e5c07b" })
+  vim.api.nvim_set_hl(0, "GitStatusUntrackedFile", { fg = "#e06c75" })
+  vim.api.nvim_set_hl(0, "GitStatusConflictedFile", { fg = "#fb4934", bold = true })
 end
 
 set_diff_highlights()
@@ -30,21 +43,56 @@ require("mini.diff").setup({
     style = "sign",
     signs = { add = "┃", change = "┃", delete = "━" },
   },
+  options = {
+    wrap_goto = true, -- Cycle between first and last hunks with notification
+  },
 })
 require("mini.git").setup()
 
 -- 3. GIT NAVIGATION & DIFF KEYMAPS
 vim.keymap.set("n", "]h", function()
   require("mini.diff").goto_hunk("next")
-end, { desc = "Next Git hunk" })
+end, { desc = "Next Git hunk (cycles)" })
 
 vim.keymap.set("n", "[h", function()
   require("mini.diff").goto_hunk("prev")
-end, { desc = "Previous Git hunk" })
+end, { desc = "Previous Git hunk (cycles)" })
 
 vim.keymap.set("n", "<leader>td", function()
   require("mini.diff").toggle_overlay()
 end, { desc = "Toggle MiniDiff Overlay" })
+
+-- Stage Hunk or Visual Selection (<leader>ga)
+vim.keymap.set("n", "<leader>ga", function()
+  local line = vim.fn.line(".")
+  require("mini.diff").do_hunks(0, "apply", { line_start = line, line_end = line })
+end, { desc = "Stage hunk at cursor (Git Add)" })
+
+vim.keymap.set("x", "<leader>ga", function()
+  local line_start = vim.fn.line("v")
+  local line_end = vim.fn.line(".")
+  if line_start > line_end then
+    line_start, line_end = line_end, line_start
+  end
+  require("mini.diff").do_hunks(0, "apply", { line_start = line_start, line_end = line_end })
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+end, { desc = "Stage selected lines (Git Add)" })
+
+-- Discard Hunk or Visual Selection (<leader>gX)
+vim.keymap.set("n", "<leader>gX", function()
+  local line = vim.fn.line(".")
+  require("mini.diff").do_hunks(0, "reset", { line_start = line, line_end = line })
+end, { desc = "Discard hunk at cursor" })
+
+vim.keymap.set("x", "<leader>gX", function()
+  local line_start = vim.fn.line("v")
+  local line_end = vim.fn.line(".")
+  if line_start > line_end then
+    line_start, line_end = line_end, line_start
+  end
+  require("mini.diff").do_hunks(0, "reset", { line_start = line_start, line_end = line_end })
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+end, { desc = "Discard selected lines" })
 
 -- Git Tab Layouts
 vim.keymap.set("n", "<leader>gl", "<cmd>tab Git log --oneline<cr>", { desc = "Git Log (Dedicated Tab)" })
@@ -61,7 +109,7 @@ vim.keymap.set("n", "<leader>gc", function()
   vim.cmd("vertical lua require('mini.git').show_at_cursor()")
 end, { desc = "Inspect commit in right panel" })
 
--- Open Commit Diff with Delta in Terminal Tab
+-- Open Commit, Stash, or Working Tree Diff with Delta in Terminal Tab
 vim.keymap.set("n", "<leader>gd", function()
   local line = vim.api.nvim_get_current_line()
   local stash = line:match("(stash@{%d+})")
@@ -71,12 +119,15 @@ vim.keymap.set("n", "<leader>gd", function()
     return
   end
   local commit = line:match("^[*|%s\\/]*([%a%d]+)")
-  if not commit or #commit < 7 then
-    commit = "HEAD"
+  if (vim.bo.filetype == "git" or vim.bo.filetype == "diff") and commit and #commit >= 7 then
+    vim.cmd("tabnew | terminal git show " .. vim.fn.fnameescape(commit) .. " | delta --paging=always")
+  elseif commit and #commit >= 7 and line:match("^[*|%s\\/]*%x%x%x%x%x%x%x") then
+    vim.cmd("tabnew | terminal git show " .. vim.fn.fnameescape(commit) .. " | delta --paging=always")
+  else
+    vim.cmd("tabnew | terminal git diff HEAD | delta --paging=always")
   end
-  vim.cmd("tabnew | terminal git show " .. vim.fn.fnameescape(commit) .. " | delta --paging=always")
   vim.cmd("startinsert")
-end, { desc = "Show Commit or Stash with Delta in Terminal Tab" })
+end, { desc = "Show Commit, Stash, or Working Tree with Delta in Terminal Tab" })
 
 -- GitHub CLI (gh) PR Integration
 vim.keymap.set("n", "<leader>gpr", "<cmd>tabnew | terminal gh pr list<cr>i", { desc = "List GitHub PRs" })
@@ -108,7 +159,7 @@ vim.api.nvim_create_autocmd("User", {
     local win_id = args.data.win_stdout
     local bufnr = vim.api.nvim_win_get_buf(win_id)
     local subcommand = args.data.git_subcommand
-    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)
+    local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
     if #lines > 0 then
       if lines[1]:match("^commit") or lines[1]:match("^diff %-%-git") then
@@ -144,6 +195,75 @@ vim.api.nvim_create_autocmd("User", {
     if subcommand == "show" or (subcommand == "stash" and #lines > 0 and lines[1]:match("^diff %-%-git")) or vim.bo[bufnr].filetype == "diff" then
       vim.keymap.set("n", "q", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Diff" })
       vim.keymap.set("n", "<BS>", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Diff" })
+    end
+
+    -- In Git status buffers: apply rich color highlights and interactive keymaps
+    if subcommand == "status" then
+      vim.bo[bufnr].filetype = "git"
+      local ns = vim.api.nvim_create_namespace("git_status_colors")
+      vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+      local current_section = nil
+
+      for lnum, line in ipairs(lines) do
+        local idx = lnum - 1
+        if line:match("^On branch ") then
+          local _, b_end = line:find("^On branch ")
+          vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 0, { end_col = b_end, hl_group = "Comment" })
+          vim.api.nvim_buf_set_extmark(bufnr, ns, idx, b_end, { end_col = #line, hl_group = "GitStatusBranch" })
+        elseif line:match("^Your branch") then
+          vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 0, { end_col = #line, hl_group = "Comment" })
+        elseif line:match("^Changes to be committed:") then
+          current_section = "staged"
+          vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 0, { end_col = #line, hl_group = "GitStatusHeaderStaged" })
+        elseif line:match("^Changes not staged for commit:") then
+          current_section = "unstaged"
+          vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 0, { end_col = #line, hl_group = "GitStatusHeaderUnstaged" })
+        elseif line:match("^Untracked files:") then
+          current_section = "untracked"
+          vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 0, { end_col = #line, hl_group = "GitStatusHeaderUntracked" })
+        elseif line:match("^Unmerged paths:") then
+          current_section = "conflicted"
+          vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 0, { end_col = #line, hl_group = "GitStatusHeaderConflicted" })
+        elseif line:match("^%s*%(") then
+          vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 0, { end_col = #line, hl_group = "Comment" })
+        elseif line:match("^\t") and current_section then
+          if current_section == "staged" then
+            local colon = line:find(":")
+            if colon then
+              vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 1, { end_col = colon, hl_group = "GitStatusStagedType" })
+              vim.api.nvim_buf_set_extmark(bufnr, ns, idx, colon, { end_col = #line, hl_group = "GitStatusStagedFile" })
+            else
+              vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 1, { end_col = #line, hl_group = "GitStatusStagedFile" })
+            end
+          elseif current_section == "unstaged" then
+            local colon = line:find(":")
+            if colon then
+              vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 1, { end_col = colon, hl_group = "GitStatusUnstagedType" })
+              vim.api.nvim_buf_set_extmark(bufnr, ns, idx, colon, { end_col = #line, hl_group = "GitStatusUnstagedFile" })
+            else
+              vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 1, { end_col = #line, hl_group = "GitStatusUnstagedFile" })
+            end
+          elseif current_section == "untracked" then
+            vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 1, { end_col = #line, hl_group = "GitStatusUntrackedFile" })
+          elseif current_section == "conflicted" then
+            vim.api.nvim_buf_set_extmark(bufnr, ns, idx, 1, { end_col = #line, hl_group = "GitStatusConflictedFile" })
+          end
+        end
+      end
+
+      -- Interactive file opening on <CR>
+      vim.keymap.set("n", "<CR>", function()
+        local line = vim.api.nvim_get_current_line()
+        local file = line:match("^\t[%a%s]+:%s+(.-)$") or line:match("^\t(.-)$")
+        if file and #file > 0 then
+          file = file:gsub("%s+$", "")
+          vim.cmd("edit " .. vim.fn.fnameescape(file))
+        end
+      end, { buffer = bufnr, desc = "Open file from Git status" })
+
+      -- Close with 'q' or <BS>
+      vim.keymap.set("n", "q", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Git Status" })
+      vim.keymap.set("n", "<BS>", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Git Status" })
     end
   end,
 })

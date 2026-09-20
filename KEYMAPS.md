@@ -1,6 +1,8 @@
 # ⌨️ Neovim Keymaps & Shortcuts Cheatsheet
 
 > **Leader Key:** `<Space>` &nbsp;|&nbsp; **LocalLeader Key:** `\`
+>
+> 📖 **Workflow Guides:** [🌿 Git Guide](docs/git-workflow.md) &nbsp;|&nbsp; [⚡ LSP Guide](docs/lsp-workflow.md) &nbsp;|&nbsp; [🧪 Sandbox Practice](docs/sandbox-guide.md)
 
 ---
 
@@ -85,15 +87,17 @@
 
 | Keymap | Mode | Action |
 | :--- | :--- | :--- |
-| **`]h`** | Normal | Jump to next modified Git hunk (`mini.diff`) |
-| **`[h`** | Normal | Jump to previous modified Git hunk (`mini.diff`) |
+| **`]h`** | Normal | Jump to next modified Git hunk (cycles with notification) |
+| **`[h`** | Normal | Jump to previous modified Git hunk (cycles with notification) |
 | **`<leader>td`** | Normal | Toggle inline color-coded diff overlays |
-| **`ghgh`** | Normal | **Stage hunk** under cursor to Git index |
-| **`gh`** | Visual | **Stage visually selected lines** to Git index |
-| **`gh_`** | Normal | **Stage current line** to Git index |
-| **`gHgh`** | Normal | **Reset / discard hunk** under cursor |
-| **`gH`** | Visual | **Reset / discard visually selected lines** |
-| **`gH_`** | Normal | **Reset / discard current line** |
+| **`<leader>ga`** | Normal / Visual | **Stage hunk at cursor** / stage selected lines (`Git Add`) |
+| **`<leader>gX`** | Normal / Visual | **Reset / discard hunk at cursor** / discard selected lines |
+| **`ghgh`** | Normal | Native stage hunk operator (*type `ghgh` without `<Space>`*) |
+| **`gh`** | Visual | Native stage visually selected lines |
+| **`gh_`** | Normal | Native stage current line |
+| **`gHgh`** | Normal | Native reset / discard hunk under cursor |
+| **`gH`** | Visual | Native reset / discard visually selected lines |
+| **`gH_`** | Normal | Native reset / discard current line |
 | **`<leader>gs`** | Normal | Open Git status in dedicated tab |
 | **`<leader>gl`** | Normal | Open Git log in dedicated tab |
 | **`<leader>gL`** | Normal | Open Git log commit graph across all branches |
@@ -102,8 +106,9 @@
 | **`<CR>`** | Normal *(inside log/stash)* | Show commit or stash diff in-place |
 | **`q` / `<BS>`** | Normal *(inside diff)* | Close diff and return to log or stash list |
 | **`<leader>gc`** | Normal | Inspect commit under cursor in right vertical split |
-| **`<leader>gd`** | Normal | Show commit / stash diff with **`delta`** in terminal tab |
-| **`<leader>gh`** | Normal / Visual | Show line range evolution history |
+| **`<leader>gd`** | Normal | Show commit, stash, or working tree diff with **`delta`** |
+| **`<leader>gh`** | Normal / Visual | Show line range evolution history (on committed lines) |
+| **`<leader>gb`** | Normal | Search, preview, and switch Git branches |
 
 ---
 

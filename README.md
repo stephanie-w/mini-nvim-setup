@@ -107,6 +107,22 @@ To edit the main configuration directly:
 
 ---
 
+## 📚 Workflow Guides & Interactive Sandbox
+
+Deep step-by-step guides and an interactive testing ground are provided:
+
+*   📖 **[Daily Git Workflow & Review Guide (docs/git-workflow.md)](docs/git-workflow.md)**: Master gutter diffs, inline overlays, granular hunk staging (`ghgh`), line staging, interactive commits, branch graphs, and Delta reviews.
+*   📖 **[Daily LSP & Code Intelligence Guide (docs/lsp-workflow.md)](docs/lsp-workflow.md)**: Master diagnostics navigation (`]d`/`[d`), floating inspector (`<leader>d`), code actions (`<leader>ca`), cross-file `gd`, references, smart rename (`<leader>rn`), and format-on-save.
+*   🧪 **[Interactive Sandbox Practice Guide (docs/sandbox-guide.md)](docs/sandbox-guide.md)**: Hands-on testing environment to practice every keymap safely without touching production code.
+
+### Quick Sandbox Tryout
+```bash
+python3 sandbox/reset_sandbox.py  # Populates live git hunks & LSP test cases
+./nv sandbox/playground/service.py # Launch isolated Neovim playground
+```
+
+---
+
 ## ⌨️ Keybindings & Shortcuts
 
 👉 **[View Full Keymaps & Shortcuts Cheatsheet (KEYMAPS.md)](KEYMAPS.md)**

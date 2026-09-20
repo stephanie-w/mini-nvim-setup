@@ -20,3 +20,6 @@ __pycache__/
 # Local User Configurations
 config/nvim/lua/local_profile.lua
 .agents/
+
+# Isolated Sandbox Playground (Contains its own test .git)
+sandbox/playground/

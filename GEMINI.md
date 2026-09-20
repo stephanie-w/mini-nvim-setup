@@ -21,6 +21,8 @@ All user data, configurations, and cache files are strictly scoped to this works
     *   `nvim/lsp/ruff.lua` : Native configuration file for the Ruff language server.
     *   `nvim/lsp/ty.lua` : Native configuration file for the ty language server/type checker.
     *   `nvim/colors/` : Directory containing custom colorschemes (`nord.lua`, `solarized-dark.lua`, `deep-teal.lua`).
+*   `./docs/` : In-depth scenario and daily developer workflow guides (`git-workflow.md`, `lsp-workflow.md`, `sandbox-guide.md`).
+*   `./sandbox/` : Isolated developer sandbox with sample service/client scripts and `reset_sandbox.py` generator.
 *   `./data/` : Contains installed plugins and runtime files (maps to `XDG_DATA_HOME`).
     *   `nvim/site/pack/plugins/start/mini.nvim/` : Cloned dependency providing the robust `mini` suite.
 *   `./state/` : Stores transient state files, logs, and Neovim SHA-DA history (maps to `XDG_STATE_HOME`).
