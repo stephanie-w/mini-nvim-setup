@@ -104,6 +104,8 @@
 | **`<leader>gf`** | Normal | Open Git log for current active file |
 | **`<leader>gS`** | Normal | Open Git stash list in dedicated tab |
 | **`<CR>`** | Normal *(inside log/stash)* | Show commit or stash diff in-place |
+| **`]h` / `[h`** | Normal *(inside diff)* | Jump to next / previous diff hunk (`@@ ... @@`) |
+| **`]f` / `[f`** | Normal *(inside diff)* | Jump to next / previous changed file (`diff --git`) |
 | **`q` / `<BS>`** | Normal *(inside diff)* | Close diff and return to log or stash list |
 | **`<leader>gc`** | Normal | Inspect commit under cursor in right vertical split |
 | **`<leader>gd`** | Normal | Show commit, stash, or working tree diff with **`delta`** |

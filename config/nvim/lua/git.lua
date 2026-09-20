@@ -134,6 +134,14 @@ vim.api.nvim_create_autocmd("User", {
       end
     end
 
+    -- Make read-only inspection buffers strictly non-modifiable & safe
+    if subcommand ~= "commit" and subcommand ~= "rebase" then
+      vim.bo[bufnr].buftype = "nofile"
+      vim.bo[bufnr].bufhidden = "wipe"
+      vim.bo[bufnr].modifiable = false
+      vim.bo[bufnr].readonly = true
+    end
+
     -- In Git log buffers: pressing <CR> opens commit diff in current window
     if subcommand == "log" then
       vim.keymap.set("n", "<CR>", function()
@@ -156,8 +164,37 @@ vim.api.nvim_create_autocmd("User", {
       end, { buffer = bufnr, desc = "Show stash diff in current window" })
     end
 
-    -- In Git show / stash diff buffers: pressing 'q' or <BS> deletes diff buffer
+    -- In Git show / stash diff buffers: navigation between hunks and files
     if subcommand == "show" or (subcommand == "stash" and #lines > 0 and lines[1]:match("^diff %-%-git")) or vim.bo[bufnr].filetype == "diff" then
+      -- Jump between hunks (@@ ... @@)
+      local jump_hunk = function(direction)
+        local flags = direction == "next" and "W" or "bW"
+        local match = vim.fn.search("^@@", flags)
+        if match == 0 then
+          flags = direction == "next" and "w" or "bw"
+          vim.fn.search("^@@", flags)
+        end
+        vim.cmd("normal! zz")
+      end
+
+      -- Jump between files (diff --git ...)
+      local jump_file = function(direction)
+        local flags = direction == "next" and "W" or "bW"
+        local match = vim.fn.search("^diff %-%-git", flags)
+        if match == 0 then
+          flags = direction == "next" and "w" or "bw"
+          vim.fn.search("^diff %-%-git", flags)
+        end
+        vim.cmd("normal! zz")
+      end
+
+      vim.keymap.set("n", "]h", function() jump_hunk("next") end, { buffer = bufnr, desc = "Next diff hunk" })
+      vim.keymap.set("n", "[h", function() jump_hunk("prev") end, { buffer = bufnr, desc = "Previous diff hunk" })
+      vim.keymap.set("n", "]c", function() jump_hunk("next") end, { buffer = bufnr, desc = "Next diff hunk" })
+      vim.keymap.set("n", "[c", function() jump_hunk("prev") end, { buffer = bufnr, desc = "Previous diff hunk" })
+      vim.keymap.set("n", "]f", function() jump_file("next") end, { buffer = bufnr, desc = "Next diff file" })
+      vim.keymap.set("n", "[f", function() jump_file("prev") end, { buffer = bufnr, desc = "Previous diff file" })
+
       vim.keymap.set("n", "q", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Diff" })
       vim.keymap.set("n", "<BS>", "<cmd>bdelete!<cr>", { buffer = bufnr, desc = "Close Diff" })
     end

@@ -108,11 +108,13 @@ You don't need to stage entire files. Stage only what belongs in your next logic
 * **`<leader>pc`** : Open an interactive fuzzy-finder picker to search commits by message or author (`mini.pick`).
 
 ### Interactive Commit Inspection (Zero-Friction Diffing)
-Inside any Git log buffer (`<leader>gl` or `<leader>gL`):
-1. **In-place Diff Preview:** Move your cursor to any commit line and press **`<CR>`** (Enter). The window immediately displays the full `git show <commit>` diff.
-2. **Back to Log:** Press **`q`** or **`<BS>`** (Backspace) to return back to the log list.
-3. **Side-by-Side Inspection:** Press **`<leader>gc`** to open a dedicated vertical panel on the right showing the commit details while keeping the log open.
-4. **Syntax-Highlighted Delta:** Press **`<leader>gd`** on any commit line to view the commit in **`delta`** in a dedicated terminal tab.
+Inside any Git log or status buffer (`<leader>gl`, `<leader>gL`, `<leader>gs`):
+1. **In-place Diff Preview:** Move your cursor to any commit or stash line and press **`<CR>`** (Enter). The window displays the full syntax-colored `git show <commit>` diff (strictly read-only and safe).
+2. **Navigate Hunks in Diff:** Press **`]h`** / **`[h`** (or **`]c`** / **`[c`**) to jump between `@@ ... @@` diff hunks.
+3. **Navigate Files in Multi-File Commits:** Press **`]f`** / **`[f`** to jump between changed file headers (`diff --git`).
+4. **Back to Log/Status:** Press **`q`** or **`<BS>`** to return back to the list view.
+5. **Side-by-Side Inspection:** Press **`<leader>gc`** to open a dedicated vertical panel on the right showing the commit details while keeping the log open.
+6. **Syntax-Highlighted Delta:** Press **`<leader>gd`** on any commit line to view the commit in **`delta`** in a dedicated terminal tab.
 
 ---
 
